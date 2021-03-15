@@ -1,4 +1,7 @@
 package pl.streamsoft.www;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -12,7 +15,6 @@ import org.apache.http.util.EntityUtils;
 
 public class GetCurrencyJson implements Strategy {
 	
-	private String code;
 	
 	private final CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -20,7 +22,9 @@ public class GetCurrencyJson implements Strategy {
 
 
 	public String getCurrency(String code) throws Exception{
-		BigDecimal Curr = new BigDecimal("1");
+		
+		
+		
 		
 		
 		HttpGet request = new HttpGet("http://api.nbp.pl/api/exchangerates/rates/a/" + code +"/?format=json");
@@ -32,19 +36,24 @@ public class GetCurrencyJson implements Strategy {
             System.out.println(response.getStatusLine().toString());
 
             HttpEntity entity = response.getEntity();
-            Header headers = entity.getContentType();
-            System.out.println(headers);
+           
+            
 
             if (entity != null) {
-                // return it as a String
-                String result = EntityUtils.toString(entity);
+                String result = EntityUtils.toString(entity);  
                 System.out.println(result);
+                
+                JsonN
+                
+                System.out.println(currency);
             }
+		} catch(IOException e) {
+			e.printStackTrace();
 		}
 		
 		
 		
-		return Curr.toString();
+		return "";
 	}
 
 	
