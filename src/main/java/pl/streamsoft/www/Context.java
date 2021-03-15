@@ -9,8 +9,8 @@ public class Context {
     }
     
     
-    public void execute(String code) throws Exception {
-        strategy.getCurrency(code);
+    public Currency execute(String code){
+        return strategy.getCurrency(code);
     }
     
 

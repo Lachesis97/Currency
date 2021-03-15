@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -13,18 +15,15 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import com.fasterxml.jackson.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class GetCurrencyJson implements Strategy {
-	
 	
 	private final CloseableHttpClient httpClient = HttpClients.createDefault();
 
-
-
-
-	public String getCurrency(String code) throws Exception{
-		
-		
-		
+	public Currency getCurrency(String code){
 		
 		
 		HttpGet request = new HttpGet("http://api.nbp.pl/api/exchangerates/rates/a/" + code +"/?format=json");
@@ -40,30 +39,30 @@ public class GetCurrencyJson implements Strategy {
             
 
             if (entity != null) {
-                String result = EntityUtils.toString(entity);  
-                System.out.println(result);
+              String result = EntityUtils.toString(entity);  
+
+              JsonStringConvert convert = new JsonStringConvert(result);
                 
-                JsonN
+              ObjectMapper objectMapper = new ObjectMapper();
+              
+              Currency currency =  objectMapper.readValue(convert.convert(), Currency.class);
+              
+              return currency;
                 
-                System.out.println(currency);
             }
-		} catch(IOException e) {
-			e.printStackTrace();
+		
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				httpClient.close();
+			} catch (IOException e) {
+				throw new CloseConnectionException("Nie uda³o siê zamkn¹æ po³¹czenia");
+			}
 		}
+		return null;
 		
-		
-		
-		return "";
 	}
 
-	
-    public void close() throws IOException {
-        httpClient.close();
-    }
-
-
-
-	
-	
 
 }
