@@ -15,7 +15,10 @@ import javax.persistence.Table;
 
 @Entity
 @NamedQueries(
-		@NamedQuery(name = "GetCurrencyDB", query = "SELECT c FROM CurrencyTable c")
+		@NamedQuery(
+				name = "GetCurrencyDB", 
+				query = "SELECT c.name, c.code, c.date, c.rate FROM CurrencyTable c"
+				)
 		)
 @Table(name = "CurrencyTable")
 public class CurrencyTable {

@@ -1,5 +1,7 @@
 package pl.streamsoft.www;
 
+import java.util.Date;
+
 public class Context {
 	
 	private Strategy strategy;
@@ -9,8 +11,8 @@ public class Context {
     }
     
     
-    public Currency execute(String code){
-        return strategy.getCurrency(code);
+    public Currency execute(String code, Date date){
+        return strategy.getCurrency(code, date);
     }
     
 

@@ -6,6 +6,7 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class GetCurrencyDB implements Strategy {
@@ -14,11 +15,11 @@ public class GetCurrencyDB implements Strategy {
 	
 	
 	@Override
-	public Currency getCurrency(String code) {
+	public Currency getCurrency(String code, Date date) {
 		
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		Query query = entityManager.createNamedQuery("GetCurrencyDB");
-		List result = null;
+		List<Currency> result = null;
 		
 		
 		try {
@@ -27,10 +28,7 @@ public class GetCurrencyDB implements Strategy {
 			
 			Currency currency = new Currency();
 			
-			currency.setName(result.get(1).toString());
-			currency.setCode(result.get(2).toString());
-			currency.setDate(null);
-			currency.setRate(null);
+
 			
 			return currency;
 			

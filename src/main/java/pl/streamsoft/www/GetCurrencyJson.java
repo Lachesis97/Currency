@@ -1,6 +1,8 @@
 package pl.streamsoft.www;
 
 import java.io.IOException;
+import java.util.Date;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -14,7 +16,7 @@ public class GetCurrencyJson implements Strategy {
 	
 	private final CloseableHttpClient httpClient = HttpClients.createDefault();
 
-	public Currency getCurrency(String code){
+	public Currency getCurrency(String code, Date date){
 		
 		
 		HttpGet request = new HttpGet("http://api.nbp.pl/api/exchangerates/rates/a/" + code +"/?format=json");
