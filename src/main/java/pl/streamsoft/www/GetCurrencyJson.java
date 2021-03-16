@@ -36,7 +36,7 @@ public class GetCurrencyJson implements Strategy {
                 
               ObjectMapper objectMapper = new ObjectMapper();
               
-              Currency currency =  objectMapper.readValue(convert.convert(), Currency.class);
+              Currency currency = objectMapper.readValue(convert.convert(), Currency.class);
               
               return currency;
                 
