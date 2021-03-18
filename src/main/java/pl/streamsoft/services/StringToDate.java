@@ -7,7 +7,7 @@ import java.util.Date;
 public class StringToDate {
 
 
-	public Date conversion(String dateS) {
+	public static Date conversion(String dateS) {
 		
 		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
 		Date date;

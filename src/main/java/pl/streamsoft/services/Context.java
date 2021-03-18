@@ -2,8 +2,6 @@ package pl.streamsoft.services;
 
 import java.util.Date;
 
-import pl.streamsoft.www.Currency;
-
 public class Context {
 	
 	private Strategy strategy;

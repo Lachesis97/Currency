@@ -13,7 +13,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import pl.streamsoft.exceptions.CloseConnectionException;
-import pl.streamsoft.www.Currency;
 
 public class GetCurrancyDateCheckService {
 	
@@ -23,48 +22,35 @@ public class GetCurrancyDateCheckService {
 	
 	public String checkDate(String code, String date) {
 		
-		
-		HttpGet request = new HttpGet("http://api.nbp.pl/api/exchangerates/rates/a/" + code + "/" + date + "/?format=json");
-		StringToDate stringToDate = new StringToDate();
-		Date newdate = newdate = stringToDate.conversion(date);
-		int i = 0;
-		
-		
-		
 		try {
 			
+			HttpGet request = new HttpGet("http://api.nbp.pl/api/exchangerates/rates/a/" + code + "/" + date + "/?format=json");
+			StringToDate stringToDate = new StringToDate();
+			
+			int i = 0;
+			Date newdate = newdate = stringToDate.conversion(date);
 			CloseableHttpResponse response = httpClient.execute(request);
 			
 			while(response.getStatusLine().getStatusCode() != 200){
-				request.releaseConnection();
-				response.close();
 				
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(newdate);
-				cal.add(Calendar.DATE, -1);
-				newdate = cal.getTime();				
+					request.releaseConnection();
+					response.close();
+					
+					SubtractOneDay subtractOneDay = new SubtractOneDay();
+					
+					newdate = subtractOneDay.substract(newdate);
 
-				HttpGet requestt = new HttpGet("http://api.nbp.pl/api/exchangerates/rates/a/" + code + "/" + new SimpleDateFormat("yyyy-MM-dd").format(newdate).toString() + "/?format=json");
-				response = httpClient.execute(requestt);
-				i++;
+					HttpGet requestt = new HttpGet("http://api.nbp.pl/api/exchangerates/rates/a/" + code + "/" + new SimpleDateFormat("yyyy-MM-dd").format(newdate) + "/?format=json");
+					response = httpClient.execute(requestt);
+					i++;
+				
 			}
 	        
 			if(i != 0) {
 				System.out.println("Dzisiejszy kurs jest niedostêpny.");
-				System.out.println();
-				System.out.println("Pobrano kurs z dnia: \"" + new SimpleDateFormat("yyyy-MM-dd").format(newdate).toString() + "\"");
-				
 			}
-			
-			 HttpEntity entity = response.getEntity();
-			 
-			 if (entity != null) {
-			 String result = EntityUtils.toString(entity);  
-
-             JsonStringConvert convert = new JsonStringConvert(result);
 	        
-	         return convert.convert();
-			 }
+	         return new SimpleDateFormat("yyyy-MM-dd").format(newdate).toString();
              
 		} catch (Exception e) {
 			
