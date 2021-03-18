@@ -1,4 +1,4 @@
-package pl.streamsoft.www;
+package pl.streamsoft.exceptions;
 
 public class CloseConnectionException extends RuntimeException {
 

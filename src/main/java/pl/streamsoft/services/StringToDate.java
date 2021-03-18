@@ -1,4 +1,4 @@
-package pl.streamsoft.www;
+package pl.streamsoft.services;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -6,9 +6,10 @@ import java.util.Date;
 
 public class StringToDate {
 
-	public static Date conversion(String dateS) {
+
+	public Date conversion(String dateS) {
 		
-		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy.MM.dd");
+		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
 		Date date;
 		try {
 			

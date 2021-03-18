@@ -1,4 +1,4 @@
-package pl.streamsoft.www;
+package pl.streamsoft.Db;
 
 
 import javax.persistence.EntityManager;
@@ -6,11 +6,20 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
+import pl.streamsoft.services.InsertCurrencyDbService;
+import pl.streamsoft.www.Currency;
+import pl.streamsoft.www.CurrencyTable;
+
 public class InsertCurrencyDb {
 	
+
 	private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Currency");
 	
-	public static void insert(Currency currency) {
+	public void insert(Currency currency, String code, String date) {
+		
+		InsertCurrencyDbService insertCurrencyDbService = new InsertCurrencyDbService();
+		
+		if(insertCurrencyDbService.itExist(currency, code, date)) {
 		
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		EntityTransaction entityTransaction;
@@ -29,13 +38,15 @@ public class InsertCurrencyDb {
 			entityManager.persist(currencyTable);
 			entityTransaction.commit();
 			
+			System.out.println("Dodano kurs \"" + currency.getName() + "\" z dnia \"" + currency.getDate() + "\" do bay danych.");
+			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			entityManager.close();
 		}
 		
-		
+		}
 	}
 
 }

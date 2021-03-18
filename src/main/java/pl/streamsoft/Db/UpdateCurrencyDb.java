@@ -1,5 +1,7 @@
-package pl.streamsoft.www;
+package pl.streamsoft.Db;
 
 public class UpdateCurrencyDb {
+	
+	
 
 }

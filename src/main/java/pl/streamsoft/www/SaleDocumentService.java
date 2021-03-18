@@ -5,39 +5,59 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import pl.streamsoft.Db.GetCurrencyDB;
+import pl.streamsoft.Db.InsertCurrencyDb;
+import pl.streamsoft.services.Context;
+import pl.streamsoft.services.DateCheckService;
+import pl.streamsoft.services.Strategy;
+import pl.streamsoft.services.StringToDate;
+
 public class SaleDocumentService {
 
 	
 	
 	public static void insert() {
 		
-		String code = "EUR";
-		String dateS = "2021.03.16";
-		BigDecimal zlotowki = new BigDecimal("10");
+		DateCheckService getCurrancyDateService = new DateCheckService();
+		
+		String code = "eur".toUpperCase();
+		String dateS = "2021-03-25";
+		BigDecimal zlotowki = new BigDecimal("10.00");
+		//dateS = getCurrancyDateService.datacheck(dateS);
+		StringToDate stringToDate = new StringToDate();
 		
 		
-		Context context = new Context(new GetCurrencyJson());
-		//Context context = new Context(new GetCurrencyDB());
+		Strategy strategy = new GetCurrencyJson();
+		//Strategy strategy = new GetCurrencyDB();
 		
-		Currency currency = context.execute(code, StringToDate.conversion(dateS));
+
 		
 		
 		
-		CurrencyConversion.conversion(code, StringToDate.conversion(dateS), zlotowki);
+		
+		CurrencyConversion.conversion(code, dateS, zlotowki, strategy);
 			
+		
+		
+		
+
+//		Context context = new Context(strategy);
+//		Currency currency = context.execute(code, dateS);
+//		System.out.println(currency.getCode() + ", " + currency.getName() + ", " + new SimpleDateFormat("yyyy-MM-dd").format(currency.getDate()) + ", " + currency.getRate());
+
+		
+		
+		
+		
+//		Context context = new Context(strategy);
+//		InsertCurrencyDb insertCurrencyDb = new InsertCurrencyDb();
+//		insertCurrencyDb.insert(context.execute(code, dateS), code, dateS);
+		
+		
+	}
 	
-		
-		//InsertCurrencyDB.insert(context.execute(code, StringToDate.conversion(dateS)));
-		
-		
-		
-		
-		
-		//System.out.println(currency.getName() + currency.getCode());
-
-		
-
-			
+	public static void main(String[] args) {
+		insert();
 	}
 
 }

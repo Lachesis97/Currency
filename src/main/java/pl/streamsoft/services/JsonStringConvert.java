@@ -1,4 +1,4 @@
-package pl.streamsoft.www;
+package pl.streamsoft.services;
 
 public class JsonStringConvert {
 	String result;

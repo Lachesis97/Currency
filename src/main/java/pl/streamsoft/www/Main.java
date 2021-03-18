@@ -16,7 +16,6 @@ public class Main {
 //      System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(currency.getDate()));
 //      System.out.println(currency.getRate());
         
-        SaleDocumentService.insert();
         
 		
 	}
