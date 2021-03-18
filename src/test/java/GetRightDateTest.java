@@ -9,11 +9,10 @@ import org.postgresql.jdbc2.optional.SimpleDataSource;
 import pl.streamsoft.Get.GetCurrencyJsonNBP;
 import pl.streamsoft.services.Context;
 import pl.streamsoft.services.FutureDateCheckService;
-import pl.streamsoft.services.GetCurrancyDateCheckService;
+import pl.streamsoft.services.GetCurrancyNbpDateCheckService;
 
 public class GetRightDateTest {
 	
-	FutureDateCheckService getCurrancyDateService = new FutureDateCheckService(); 
 	
 	@Test
 	public void should_return_todays_date() {
@@ -25,6 +24,7 @@ public class GetRightDateTest {
 		String today = new SimpleDateFormat("yyyy-MM-dd").format(convert.getTime());
 		
 		//when
+		FutureDateCheckService getCurrancyDateService = new FutureDateCheckService(); 
 		String newdate = getCurrancyDateService.datacheck(date);
 		
 		//then
@@ -32,29 +32,44 @@ public class GetRightDateTest {
 		
 	}
 	
+
 	
-	
-	GetCurrancyDateCheckService getCurrancyDateCheckService = new GetCurrancyDateCheckService();
     
 	@Test
 	public void should_return_first_date_at_which_the_rate_is_available_if_given_date_doesnt_have_rate() {
 		
 		//given
-		String date = "2021-05-25";
+		String date = "2021-03-25";
 		String code = "eur";
 		
+		Boolean check = false;
 		Calendar convert = Calendar.getInstance();
 		convert.set(Calendar.HOUR_OF_DAY, 0);
 		String today = new SimpleDateFormat("yyyy-MM-dd").format(convert.getTime());
 		
+		convert.set(Calendar.HOUR_OF_DAY, -1);
+		String minus1 = new SimpleDateFormat("yyyy-MM-dd").format(convert.getTime());
+		
+		convert.set(Calendar.HOUR_OF_DAY, -25);
+		String minus2 = new SimpleDateFormat("yyyy-MM-dd").format(convert.getTime());
+		
+		
 		//when
+		GetCurrancyNbpDateCheckService getCurrancyDateCheckService = new GetCurrancyNbpDateCheckService();
 		String checkedDate = getCurrancyDateCheckService.checkDate(code, date);
 		
+		
+		if(checkedDate.equals(today)){
+			check = true;
+		} else if(checkedDate.equals(minus1)) {
+			check = true;
+		} else if(checkedDate.equals(minus2)) {
+			check = true;
+		}
+		
 		//then
-		Assert.assertEquals(today, checkedDate);
-		
-		
-		
+		Assert.assertTrue(check);
+				
 	}
 	
 	

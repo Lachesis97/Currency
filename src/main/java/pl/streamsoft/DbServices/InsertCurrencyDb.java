@@ -1,10 +1,12 @@
-package pl.streamsoft.services;
+package pl.streamsoft.DbServices;
 
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+
+import pl.streamsoft.services.Currency;
 
 public class InsertCurrencyDb {
 	

@@ -1,4 +1,4 @@
-package pl.streamsoft.services;
+package pl.streamsoft.DbServices;
 
 import java.math.BigDecimal;
 import java.util.Date;

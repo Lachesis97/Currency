@@ -14,7 +14,7 @@ import org.apache.http.util.EntityUtils;
 
 import pl.streamsoft.exceptions.CloseConnectionException;
 
-public class GetCurrancyDateCheckService {
+public class GetCurrancyNbpDateCheckService {
 	
 	private final CloseableHttpClient httpClient = HttpClients.createDefault();
 	
@@ -24,6 +24,9 @@ public class GetCurrancyDateCheckService {
 		
 		try {
 			
+			FutureDateCheckService getCurrancyDateService = new FutureDateCheckService();
+			date = getCurrancyDateService.datacheck(date);
+			
 			HttpGet request = new HttpGet("http://api.nbp.pl/api/exchangerates/rates/a/" + code + "/" + date + "/?format=json");
 			StringToDate stringToDate = new StringToDate();
 			
@@ -31,12 +34,13 @@ public class GetCurrancyDateCheckService {
 			Date newdate = newdate = stringToDate.conversion(date);
 			CloseableHttpResponse response = httpClient.execute(request);
 			
+			if(response.getStatusLine().getStatusCode() != 404){
 			while(response.getStatusLine().getStatusCode() != 200){
 				
 					request.releaseConnection();
 					response.close();
 					
-					SubtractOneDay subtractOneDay = new SubtractOneDay();
+					SubstractOneDay subtractOneDay = new SubstractOneDay();
 					
 					newdate = subtractOneDay.substract(newdate);
 
@@ -44,6 +48,7 @@ public class GetCurrancyDateCheckService {
 					response = httpClient.execute(requestt);
 					i++;
 				
+			}
 			}
 	        
 			if(i != 0) {

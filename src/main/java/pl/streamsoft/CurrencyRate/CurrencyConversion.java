@@ -14,7 +14,6 @@ package pl.streamsoft.CurrencyRate;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -27,19 +26,6 @@ import pl.streamsoft.services.Strategy;
 public class CurrencyConversion {
 	
 	public static BigDecimal conversion(String code, String dateS, BigDecimal amount, Strategy strategy) {
-		
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		
-		if(dateS == "today" || dateS == "dzisiaj" || dateS == "dziœ" || dateS == "" || dateS == "now") {
-
-			dateS = dateFormat.format( new Date() );
-			
-		} else {
-			
-			FutureDateCheckService getCurrancyDateService = new FutureDateCheckService();
-			dateS = getCurrancyDateService.datacheck(dateS);
-			
-		}
 		
 		
 		Context context = new Context(strategy);

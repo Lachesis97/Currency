@@ -11,11 +11,11 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
+import pl.streamsoft.DbServices.CurrencyTable;
+import pl.streamsoft.DbServices.InsertCurrencyDbService;
 import pl.streamsoft.exceptions.CloseConnectionException;
 import pl.streamsoft.exceptions.NoDbResultException;
 import pl.streamsoft.services.Currency;
-import pl.streamsoft.services.CurrencyTable;
-import pl.streamsoft.services.InsertCurrencyDbService;
 import pl.streamsoft.services.Strategy;
 import pl.streamsoft.services.StringToDate;
 

@@ -1,9 +1,11 @@
-package pl.streamsoft.services;
+package pl.streamsoft.DbServices;
 
 import java.text.SimpleDateFormat;
 
 import pl.streamsoft.Get.GetCurrencyDB;
 import pl.streamsoft.Get.GetCurrencyJsonNBP;
+import pl.streamsoft.services.Context;
+import pl.streamsoft.services.Currency;
 
 public class InsertCurrencyDbService {
 

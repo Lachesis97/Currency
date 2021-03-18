@@ -20,7 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.streamsoft.exceptions.CloseConnectionException;
 import pl.streamsoft.services.Context;
 import pl.streamsoft.services.Currency;
-import pl.streamsoft.services.GetCurrancyDateCheckService;
+import pl.streamsoft.services.FutureDateCheckService;
+import pl.streamsoft.services.GetCurrancyNbpDateCheckService;
+import pl.streamsoft.services.JsonObjMapper;
 import pl.streamsoft.services.JsonStringConvert;
 import pl.streamsoft.services.Strategy;
 import pl.streamsoft.services.StringToDate;
@@ -40,12 +42,10 @@ public class GetCurrencyJsonNBP implements Strategy {
 			
 		
 		try {
-                
-              
-              GetCurrancyDateCheckService getCurrancyDateCheckService = new GetCurrancyDateCheckService();
+			
+              GetCurrancyNbpDateCheckService getCurrancyDateCheckService = new GetCurrancyNbpDateCheckService();
               
               String checkedDate = getCurrancyDateCheckService.checkDate(code, date);
-              
               
               
               HttpGet request = new HttpGet(url + code + "/" + checkedDate + "/?format=json");
@@ -58,19 +58,11 @@ public class GetCurrencyJsonNBP implements Strategy {
  				 
  				 String result = EntityUtils.toString(entity);  
  			 
- 				 JsonStringConvert convert = new JsonStringConvert(result);
- 				 
- 				 String json = convert.convert();
- 				 
- 				 Currency currency = new Currency();
- 	              
- 	             ObjectMapper objectMapper = new ObjectMapper();
- 	              
- 	             currency = objectMapper.readValue(json, Currency.class);
- 	             
  	             System.out.println("Pobrano kurs z dnia: \"" + checkedDate + "\"");
+ 	             
+ 	             JsonObjMapper jsonObjMapper = new JsonObjMapper();
  				 
- 	             return currency;
+ 	             return jsonObjMapper.mapper(result);
  			 }
               
 		} catch(Exception e) {

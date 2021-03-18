@@ -13,13 +13,14 @@ package pl.streamsoft.CurrencyRate;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
+import pl.streamsoft.DbServices.InsertCurrencyDb;
 import pl.streamsoft.Get.GetCurrencyDB;
 import pl.streamsoft.Get.GetCurrencyJsonNBP;
 import pl.streamsoft.services.Context;
 import pl.streamsoft.services.FutureDateCheckService;
-import pl.streamsoft.services.InsertCurrencyDb;
 import pl.streamsoft.services.Strategy;
 import pl.streamsoft.services.StringToDate;
 
@@ -31,16 +32,13 @@ public class SaleDocumentService {
 		
 		
 		String code = "eur";
-		String dateS = "2021-03-13";
+		String dateS = "2021-03-20";
 		BigDecimal zlotowki = new BigDecimal("123.00");
 		
 		String urlNBP = "http://api.nbp.pl/api/exchangerates/rates/a/";
 		//String urlFile = "C:\\Users\\krzysztof.kmiecik/json.json";
 		
-		
-		
-		
-		
+
 		
 		Strategy strategy = new GetCurrencyJsonNBP(urlNBP);
 		//Strategy strategy = new GetCurrencyDB();
