@@ -1,3 +1,4 @@
+package pl.streamsoft.test;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;

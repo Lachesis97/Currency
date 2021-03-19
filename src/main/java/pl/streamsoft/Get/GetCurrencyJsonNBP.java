@@ -1,12 +1,14 @@
 package pl.streamsoft.Get;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -18,6 +20,8 @@ import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.Runtime
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import pl.streamsoft.exceptions.CloseConnectionException;
+import pl.streamsoft.exceptions.EntityToStringException;
+import pl.streamsoft.exceptions.ExecuteHttpRequestException;
 import pl.streamsoft.services.Context;
 import pl.streamsoft.services.Currency;
 import pl.streamsoft.services.FutureDateCheckService;
@@ -40,6 +44,9 @@ public class GetCurrencyJsonNBP implements Strategy {
 
 	public Currency getCurrency(String code, String date){
 			
+		if(url.equals("")) {
+			url = "http://api.nbp.pl/api/exchangerates/rates/a/";
+		}
 		
 		try {
 			
@@ -65,13 +72,22 @@ public class GetCurrencyJsonNBP implements Strategy {
  	             return jsonObjMapper.mapper(result);
  			 }
               
+ 			 
+			
+		} catch(ClientProtocolException e) {
+			throw new ExecuteHttpRequestException("B³¹d ¿¹dania Http / GetCurrencyJsonNBP.java");
+		} catch(ConnectException e) {
+			throw new ExecuteHttpRequestException("Connection timeout / GetCurrencyJsonNBP.java");
+		} catch(IOException e) {
+			throw new EntityToStringException("B³¹d konwersji wyniku ¿¹dania Http na String / GetCurrencyJsonNBP.java");
+		
 		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}  finally {
 			try {
 				httpClient.close();
 			} catch (IOException e) {
-				throw new CloseConnectionException("Nie uda³o siê zamkn¹æ po³¹czenia");
+				throw new CloseConnectionException("Nie uda³o siê zamkn¹æ po³¹czenia / GetCurrencyJsonNBP.java");
 			}
 		}
 		return null;

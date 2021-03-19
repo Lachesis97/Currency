@@ -13,6 +13,8 @@
 package pl.streamsoft.CurrencyRate;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,8 +34,11 @@ public class CurrencyConversion {
 		
 		Currency currency = context.execute(code.toUpperCase(), dateS);
 		
+		BigDecimal rate = currency.getRate().setScale(5);
 		
-		return amount.multiply(currency.getRate().setScale(4));
+		BigDecimal multi = amount.multiply(rate);
+		
+		return multi;
 	}
 
 }

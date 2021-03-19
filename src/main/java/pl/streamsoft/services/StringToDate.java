@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import pl.streamsoft.exceptions.StringToDateException;
+
 public class StringToDate {
 
 
@@ -17,10 +19,9 @@ public class StringToDate {
 			
 			return date;
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new StringToDateException("B³¹d konwersji string to date / StringToDate.java");
 		}	
-		return null;
+
 		
 		
 	}

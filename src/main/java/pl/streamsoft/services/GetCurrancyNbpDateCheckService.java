@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -13,6 +14,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import pl.streamsoft.exceptions.CloseConnectionException;
+import pl.streamsoft.exceptions.ExecuteHttpRequestException;
 
 public class GetCurrancyNbpDateCheckService {
 	
@@ -34,7 +36,7 @@ public class GetCurrancyNbpDateCheckService {
 			Date newdate = newdate = stringToDate.conversion(date);
 			CloseableHttpResponse response = httpClient.execute(request);
 			
-			if(response.getStatusLine().getStatusCode() != 404){
+			if(response.getStatusLine().getStatusCode() == 404){
 			while(response.getStatusLine().getStatusCode() != 200){
 				
 					request.releaseConnection();
@@ -57,20 +59,20 @@ public class GetCurrancyNbpDateCheckService {
 	        
 	         return new SimpleDateFormat("yyyy-MM-dd").format(newdate).toString();
              
+		} catch(ClientProtocolException e) {
+			throw new ExecuteHttpRequestException("B³¹d ¿¹dania Http / GetCurrencyNBPDatacheckService.java");
+		} catch (IOException e) {
+			throw new CloseConnectionException("Nie uda³o siê zamkn¹æ po³¹czenia / GetCurrencyNBPDatacheckService.java");
 		} catch (Exception e) {
-			
+			throw new RuntimeException(e);
 		} finally {
 			try {
 				httpClient.close();
 			} catch (IOException e) {
-				throw new CloseConnectionException("Nie uda³o siê zamkn¹æ po³¹czenia");
+				throw new CloseConnectionException("Nie uda³o siê zamkn¹æ po³¹czenia / GetCurrencyNBPDatacheckService.java");
 			}
 		}
 		
-
-		
-		
-		return null;
 	}
 	
 

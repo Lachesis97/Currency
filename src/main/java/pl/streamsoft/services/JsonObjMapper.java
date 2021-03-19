@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import pl.streamsoft.exceptions.MappingJsonException;
+
 public class JsonObjMapper {
 	
 	public Currency mapper(String json) {
@@ -20,12 +22,10 @@ public class JsonObjMapper {
 			currency = objectMapper.readValue(convertedJson, Currency.class);
 			return currency;
 		} catch (JsonMappingException e) {
-			e.printStackTrace();
+			throw new MappingJsonException("B³¹d mapowania Json / JsonObjMapper.java");
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			throw new MappingJsonException("B³¹d mapowania Json / JsonObjMapper.java");
 		}
-		
-		return null;
 		
 	}
 

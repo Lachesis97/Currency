@@ -5,9 +5,6 @@
  *
  */
 
-
-
-
 package pl.streamsoft.CurrencyRate;
 
 import java.math.BigDecimal;
@@ -32,7 +29,7 @@ public class SaleDocumentService {
 		
 		
 		String code = "eur";
-		String dateS = "2021-03-20";
+		String dateS = "2021-03-18";
 		BigDecimal zlotowki = new BigDecimal("123.00");
 		
 		String urlNBP = "http://api.nbp.pl/api/exchangerates/rates/a/";
@@ -49,10 +46,21 @@ public class SaleDocumentService {
 		
 		
 		
-		BigDecimal result = CurrencyConversion.conversion(code, dateS, zlotowki, strategy).setScale(4);
+		BigDecimal result = CurrencyConversion.conversion(code, dateS, zlotowki, strategy);
 		System.out.println("Wynik konwersji: " + result);
 	
 			
+		
+		
+		
+		
+		
+		
+		
+		
+//		Context context = new Context(strategy);
+//		InsertCurrencyDb insertCurrencyDb = new InsertCurrencyDb();
+//		insertCurrencyDb.insert(context.execute(code, dateS), code, dateS);
 		
 		
 		
@@ -64,13 +72,6 @@ public class SaleDocumentService {
 //		Currency currency = context.execute(code, dateS);
 //		System.out.println(currency.getCode() + ", " + currency.getName() + ", " + new SimpleDateFormat("yyyy-MM-dd").format(currency.getDate()) + ", " + currency.getRate());
 
-		
-		
-		
-		
-//		Context context = new Context(strategy);
-//		InsertCurrencyDb insertCurrencyDb = new InsertCurrencyDb();
-//		insertCurrencyDb.insert(context.execute(code, dateS), code, dateS);
 		
 		
 	}
