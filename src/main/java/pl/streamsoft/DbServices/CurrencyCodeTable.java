@@ -2,28 +2,39 @@ package pl.streamsoft.DbServices;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 
 @Entity
-@NamedQueries(
-		@NamedQuery(
-				name = "GetCurrencyDB", 
-				query = "SELECT c FROM CurrencyTable c WHERE c.code = :code AND c.date = :date"
-				)
-		)
-@Table(name = "CurrencyTable")
-public class CurrencyTable {
+//@NamedQueries(
+//		{
+//		@NamedQuery(
+//				name = "GetCurrencyCodeID", 
+//				query = "SELECT c.id FROM CurrencyCodeTable c WHERE c.code = :code"
+//				),
+//		@NamedQuery(
+//				name = "GetCurrencyDB", 
+//				query = "SELECT c.code, c.name, r.date, r.rate FROM CurrencyCodeTable c, CurrencyRatesTable r WHERE c.id = r.codeid AND c.code = :code AND r.date = :date"
+//				)
+//		}
+//		)
+@Table(name = "CurrencyCodeTable")
+public class CurrencyCodeTable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,14 +47,12 @@ public class CurrencyTable {
 	@Column(name = "Code", nullable = false)
 	private String code;
 	
-	@Temporal(TemporalType.DATE)
-	@Column(name = "Date", nullable = false)
-	private Date date;
+	@OneToMany(fetch = FetchType.EAGER, targetEntity = CurrencyRatesTable.class, cascade = CascadeType.ALL)
+	@JoinColumn(name = "ID", referencedColumnName = "CodeID")
+	private Set<CurrencyRatesTable> rate;
 	
-	@Column(name = "Rate", nullable = false, columnDefinition="DECIMAL(19,4)")
-	private BigDecimal rate;
 
-	public CurrencyTable() {
+	public CurrencyCodeTable() {
 		
 	}
 	
@@ -69,22 +78,6 @@ public class CurrencyTable {
 
 	public void setCode(String code) {
 		this.code = code;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	public BigDecimal getRate() {
-		return rate;
-	}
-
-	public void setRate(BigDecimal rate) {
-		this.rate = rate;
 	}
 
 }

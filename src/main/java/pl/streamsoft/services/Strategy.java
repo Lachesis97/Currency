@@ -1,9 +1,9 @@
 package pl.streamsoft.services;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-public interface Strategy{
-	
-	public Currency getCurrency(String code, String date);
+public interface Strategy {
+
+	public Currency getCurrency(String code, LocalDate date);
 
 }

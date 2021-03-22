@@ -1,44 +1,38 @@
 package pl.streamsoft.services;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({
-"currency",
-"code",
-"effectiveDate",
-"mid"
-})
+@JsonPropertyOrder({ "currency", "code", "effectiveDate", "mid" })
 
-@JsonIgnoreProperties({
-	"table",
-	"no",
-})
+@JsonIgnoreProperties({ "table", "no", })
 
 public class Currency {
-	
+
 	@JsonProperty("currency")
 	String name;
-	
+
 	@JsonProperty("code")
 	String code;
-	
+
 	@JsonProperty("effectiveDate")
-	Date date;
-	
+	LocalDate date;
+
 	@JsonProperty("mid")
-	BigDecimal rate; 
-	
-	public Currency(String name, String code, Date date, BigDecimal rate) {
-		
+	BigDecimal rate;
+
+	public Currency(String name, String code, LocalDate date, BigDecimal rate) {
+
 		this.name = name;
 		this.code = code;
 		this.date = date;
 		this.rate = rate;
 	}
-	
+
 	public Currency() {
 		super();
 	}
@@ -59,11 +53,11 @@ public class Currency {
 		this.code = code;
 	}
 
-	public Date getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 
@@ -74,11 +68,5 @@ public class Currency {
 	public void setRate(BigDecimal rate) {
 		this.rate = rate;
 	}
-	
-	
-	
-	
-	
-	
 
 }

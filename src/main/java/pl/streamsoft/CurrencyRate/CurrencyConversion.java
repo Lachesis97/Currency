@@ -9,36 +9,32 @@
  *
  */
 
-
 package pl.streamsoft.CurrencyRate;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
-import pl.streamsoft.services.Context;
 import pl.streamsoft.services.Currency;
-import pl.streamsoft.services.FutureDateCheckService;
 import pl.streamsoft.services.Strategy;
 
-
 public class CurrencyConversion {
-	
-	public static BigDecimal conversion(String code, String dateS, BigDecimal amount, Strategy strategy) {
-		
-		
-		Context context = new Context(strategy);
-		
-		Currency currency = context.execute(code.toUpperCase(), dateS);
-		
-		BigDecimal rate = currency.getRate().setScale(5);
-		
-		BigDecimal multi = amount.multiply(rate);
-		
-		return multi;
+
+	static Strategy strategy;
+
+	public CurrencyConversion(Strategy strategy) {
+		this.strategy = strategy;
+	}
+
+	public static BigDecimal conversion(String code, LocalDate date, BigDecimal amount) {
+
+		Currency currency = strategy.getCurrency(code.toUpperCase(), date);
+
+		BigDecimal rate = currency.getRate();
+
+		BigDecimal multi;
+
+		return multi = amount.multiply(rate);
+
 	}
 
 }

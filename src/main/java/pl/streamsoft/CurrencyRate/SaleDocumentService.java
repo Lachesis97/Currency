@@ -4,77 +4,33 @@
  * 
  *
  */
-
 package pl.streamsoft.CurrencyRate;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 
-import pl.streamsoft.DbServices.InsertCurrencyDb;
-import pl.streamsoft.Get.GetCurrencyDB;
 import pl.streamsoft.Get.GetCurrencyJsonNBP;
-import pl.streamsoft.services.Context;
-import pl.streamsoft.services.FutureDateCheckService;
-import pl.streamsoft.services.Strategy;
-import pl.streamsoft.services.StringToDate;
 
 public class SaleDocumentService {
 
-	
-	
 	public static void insert() {
-		
-		
+
 		String code = "eur";
-		String dateS = "2021-03-18";
-		BigDecimal zlotowki = new BigDecimal("123.00");
-		
-		String urlNBP = "http://api.nbp.pl/api/exchangerates/rates/a/";
-		//String urlFile = "C:\\Users\\krzysztof.kmiecik/json.json";
-		
+		LocalDate date = LocalDate.of(2021, 3, 25);
+		BigDecimal waluta = new BigDecimal("123.00");
 
-		
-		Strategy strategy = new GetCurrencyJsonNBP(urlNBP);
-		//Strategy strategy = new GetCurrencyDB();
-		//Strategy strategy = new GetCurrencyJsonFile(urlFile);
-		
-
-		
-		
-		
-		
-		BigDecimal result = CurrencyConversion.conversion(code, dateS, zlotowki, strategy);
+		CurrencyConversion conversion = new CurrencyConversion(new GetCurrencyJsonNBP());
+		BigDecimal result = conversion.conversion(code, date, waluta);
 		System.out.println("Wynik konwersji: " + result);
-	
-			
-		
-		
-		
-		
-		
-		
-		
-		
+
 //		Context context = new Context(strategy);
 //		InsertCurrencyDb insertCurrencyDb = new InsertCurrencyDb();
 //		insertCurrencyDb.insert(context.execute(code, dateS), code, dateS);
-		
-		
-		
-		
-		
-		
 
 //		Context context = new Context(strategy);
 //		Currency currency = context.execute(code, dateS);
 //		System.out.println(currency.getCode() + ", " + currency.getName() + ", " + new SimpleDateFormat("yyyy-MM-dd").format(currency.getDate()) + ", " + currency.getRate());
 
-		
-		
 	}
-
 
 }
