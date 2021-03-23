@@ -11,15 +11,14 @@ import javax.persistence.Query;
 import pl.streamsoft.DbServices.CurrencyCodeTable;
 import pl.streamsoft.DbServices.CurrencyRatesTable;
 import pl.streamsoft.exceptions.NoDbResultException;
-import pl.streamsoft.services.Currency;
-import pl.streamsoft.services.Strategy;
+import pl.streamsoft.services.RateService;
 
-public class GetCurrencyDB implements Strategy {
+public class GetCurrencyDB implements RateService {
 
 	private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Currency");
 
 	@SuppressWarnings("unused")
-	public Currency getCurrency(String code, LocalDate date) {
+	public String getCurrency(String code, LocalDate date) {
 
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		Query query = entityManager.createNamedQuery("GetCurrencyDB");
@@ -33,27 +32,25 @@ public class GetCurrencyDB implements Strategy {
 
 			currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
 
-			if (currencyCodeTable != null && currencyRatesTable != null) {
-				Currency currency = new Currency();
+			if (currencyCodeTable != null) {
 
-				currency.setName(currencyCodeTable.getName());
-				currency.setCode(currencyCodeTable.getName());
-				currency.setDate(currencyRatesTable.getDate());
-				currency.setRate(currencyRatesTable.getRate());
-				return currency;
-			} else {
-				return null;
+				String currString;
+
+				currString = (currencyCodeTable.getCode() + "," + currencyCodeTable.getName() + ","
+						+ currencyRatesTable.getDate() + "," + currencyRatesTable.getRate());
+
+				return currString;
 			}
-
 		} catch (NoResultException e) {
 			if (currencyCodeTable == null) {
-				return null;
-			} else {
 				throw new NoDbResultException("Brak wyniku w bazie danych.", e);
+
 			}
+
 		} finally {
 			entityManager.close();
 		}
+		return null;
 
 	}
 

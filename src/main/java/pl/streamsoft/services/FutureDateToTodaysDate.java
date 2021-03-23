@@ -2,14 +2,13 @@ package pl.streamsoft.services;
 
 import java.time.LocalDate;
 
-public class FutureDateCheckService {
+public class FutureDateToTodaysDate {
 
-	public LocalDate datacheck(LocalDate date) {
+	public static LocalDate dataValidation(LocalDate date) {
 
 		LocalDate now = LocalDate.now();
 
 		if (date.isAfter(now)) {
-			System.out.println("Próbujesz sprawdziæ kurs z przysz³oœci");
 			date = now;
 
 		}

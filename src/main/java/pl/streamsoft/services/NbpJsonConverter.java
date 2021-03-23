@@ -7,22 +7,18 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import pl.streamsoft.exceptions.MappingJsonException;
 
-public class JsonObjMapper {
+public class NbpJsonConverter implements ConvertService {
 
-	public Currency mapper(String json) {
-
-		Currency currency = new Currency();
+	public Currency convertDataToObj(String data) {
+		data = ChangeJsonNBP.change(data);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
 
-		JsonStringConvert convert = new JsonStringConvert();
-
-		String convertedJson = convert.convert(json);
-
 		try {
-			currency = objectMapper.readValue(convertedJson, Currency.class);
+			Currency currency = objectMapper.readValue(data, Currency.class);
 			return currency;
+
 		} catch (JsonMappingException e) {
 			throw new MappingJsonException("B³¹d mapowania Json / JsonObjMapper.java", e);
 		} catch (JsonProcessingException e) {

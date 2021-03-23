@@ -1,10 +1,11 @@
 package pl.streamsoft.Get;
 
-import java.io.IOException;
 import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.time.LocalDate;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -12,63 +13,52 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import pl.streamsoft.exceptions.CloseConnectionException;
-import pl.streamsoft.exceptions.EntityToStringException;
 import pl.streamsoft.exceptions.ExecuteHttpRequestException;
-import pl.streamsoft.services.Currency;
-import pl.streamsoft.services.GetCurrancyNbpDateCheckService;
-import pl.streamsoft.services.JsonObjMapper;
-import pl.streamsoft.services.Strategy;
+import pl.streamsoft.services.RateService;
 
-public class GetCurrencyJsonNBP implements Strategy {
+public class GetCurrencyJsonNBP implements RateService {
 
-	private final CloseableHttpClient httpClient = HttpClients.createDefault();
+	String url;
 
-	public Currency getCurrency(String code, LocalDate date) {
+	public GetCurrencyJsonNBP() {
+		url = "http://api.nbp.pl/api/exchangerates/rates/a/";
+	}
 
-		String url = "http://api.nbp.pl/api/exchangerates/rates/a/";
+	public GetCurrencyJsonNBP(String url) {
+		this.url = url;
+	}
+
+	public String getCurrency(String code, LocalDate date) {
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		try {
-			GetCurrancyNbpDateCheckService getCurrancyDateCheckService = new GetCurrancyNbpDateCheckService();
 
-			LocalDate checkedDate = getCurrancyDateCheckService.checkDate(code, date);
-
-			HttpGet request = new HttpGet(url + code + "/" + checkedDate + "/?format=json");
+			HttpGet request = new HttpGet(url + code + "/" + date + "/?format=json");
 
 			CloseableHttpResponse response = httpClient.execute(request);
 
 			HttpEntity entity = response.getEntity();
 
-			if (entity != null) {
+			if (response.getStatusLine().getStatusCode() == 200) {
 
 				String result = EntityUtils.toString(entity);
 
-				System.out.println("Pobrano kurs z dnia: \"" + checkedDate + "\"");
-
-				JsonObjMapper jsonObjMapper = new JsonObjMapper();
-
-				return jsonObjMapper.mapper(result);
+				return result;
 			} else {
-				throw new ExecuteHttpRequestException(
-						"Nie uda³o siê pobrac wyników z ¿¹dania Http / GetCurrencyJsonNBP.java");
+				return null;
 			}
 
+		} catch (NoHttpResponseException e) {
+			throw new ExecuteHttpRequestException("Brak odpowiedzi ze strony serwera / GetCurrencyJsonNBP.java", e);
 		} catch (ClientProtocolException e) {
 			throw new ExecuteHttpRequestException("B³¹d ¿¹dania Http / GetCurrencyJsonNBP.java", e);
 		} catch (ConnectException e) {
 			throw new ExecuteHttpRequestException("Connection timeout / GetCurrencyJsonNBP.java", e);
-		} catch (IOException e) {
-			throw new EntityToStringException("B³¹d konwersji wyniku ¿¹dania Http na String / GetCurrencyJsonNBP.java",
-					e);
-
+		} catch (UnknownHostException e) {
+			throw new ExecuteHttpRequestException("Nieznany host / GetCurrencyJsonNBP.java", e);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		} finally {
-			try {
-				httpClient.close();
-			} catch (IOException e) {
-				throw new CloseConnectionException("Nie uda³o siê zamkn¹æ po³¹czenia / GetCurrencyJsonNBP.java", e);
-			}
 		}
 
 	}

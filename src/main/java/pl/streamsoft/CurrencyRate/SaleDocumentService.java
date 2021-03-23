@@ -9,18 +9,16 @@ package pl.streamsoft.CurrencyRate;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import pl.streamsoft.Get.GetCurrencyJsonNBP;
-
 public class SaleDocumentService {
 
-	public static void insert() {
+	public void insert() {
 
 		String code = "eur";
-		LocalDate date = LocalDate.of(2021, 3, 25);
-		BigDecimal waluta = new BigDecimal("123.00");
+		LocalDate date = LocalDate.of(2022, 3, 15);
+		BigDecimal foreignCurrency = new BigDecimal("123.45");
 
-		CurrencyConversion conversion = new CurrencyConversion(new GetCurrencyJsonNBP());
-		BigDecimal result = conversion.conversion(code, date, waluta);
+		CurrencyConversion conversion = new CurrencyConversion();
+		BigDecimal result = conversion.conversion(code, date, foreignCurrency);
 		System.out.println("Wynik konwersji: " + result);
 
 //		Context context = new Context(strategy);

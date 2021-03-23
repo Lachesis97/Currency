@@ -1,9 +1,9 @@
 package pl.streamsoft.services;
 
-public class JsonStringConvert {
+public class ChangeJsonNBP {
 	String result;
 
-	public String convert(String result) {
+	public static String change(String result) {
 		String[] cutresult = result.split("\\[");
 
 		String finalresult = cutresult[0].substring(0, cutresult[0].length() - 8)

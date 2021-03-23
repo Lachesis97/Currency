@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import pl.streamsoft.Get.GetCurrencyDB;
 import pl.streamsoft.Get.GetCurrencyJsonNBP;
 import pl.streamsoft.services.Context;
-import pl.streamsoft.services.Currency;
 
 public class InsertCurrencyDbService {
 
@@ -20,7 +19,7 @@ public class InsertCurrencyDbService {
 	public Boolean itExistCode() {
 		Boolean itexist;
 
-		Currency currencydb = new GetCurrencyJsonNBP().getCurrency(code.toUpperCase(), date);
+		String currencydb = new GetCurrencyJsonNBP().getCurrency(code.toUpperCase(), date);
 
 		if (currencydb == null) {
 			itexist = true;
@@ -37,7 +36,7 @@ public class InsertCurrencyDbService {
 
 		Context context = new Context(new GetCurrencyDB());
 
-		Currency currencydb = context.execute(code, date);
+		String currencydb = context.execute(code, date);
 
 		if (currencydb == null) {
 			itexist = true;

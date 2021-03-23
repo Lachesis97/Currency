@@ -14,26 +14,40 @@ package pl.streamsoft.CurrencyRate;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import pl.streamsoft.Get.GetCurrencyJsonNBP;
+import pl.streamsoft.services.ConvertService;
 import pl.streamsoft.services.Currency;
-import pl.streamsoft.services.Strategy;
+import pl.streamsoft.services.FutureDateToTodaysDate;
+import pl.streamsoft.services.NbpJsonConverter;
+import pl.streamsoft.services.RateService;
+import pl.streamsoft.services.ReturnValidateDate;
 
 public class CurrencyConversion {
 
-	static Strategy strategy;
+	RateService rateService;
+	ConvertService convertService;
 
-	public CurrencyConversion(Strategy strategy) {
-		this.strategy = strategy;
+	public CurrencyConversion() {
+		rateService = new GetCurrencyJsonNBP();
+		convertService = new NbpJsonConverter();
 	}
 
-	public static BigDecimal conversion(String code, LocalDate date, BigDecimal amount) {
+	public CurrencyConversion(RateService rateService, ConvertService convertService) {
+		this.rateService = rateService;
+		this.convertService = convertService;
 
-		Currency currency = strategy.getCurrency(code.toUpperCase(), date);
+	}
 
-		BigDecimal rate = currency.getRate();
+	public BigDecimal conversion(String code, LocalDate date, BigDecimal amount) {
 
-		BigDecimal multi;
+		date = FutureDateToTodaysDate.dataValidation(date);
+		date = ReturnValidateDate.dataValidation(code, date, rateService);
 
-		return multi = amount.multiply(rate);
+		String result = rateService.getCurrency(code.toUpperCase(), date);
+
+		Currency currency = convertService.convertDataToObj(result);
+
+		return amount.multiply(currency.getRate());
 
 	}
 

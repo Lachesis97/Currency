@@ -4,13 +4,13 @@ import java.time.LocalDate;
 
 public class Context {
 
-	private Strategy strategy;
+	private RateService strategy;
 
-	public Context(Strategy strategy) {
+	public Context(RateService strategy) {
 		this.strategy = strategy;
 	}
 
-	public Currency execute(String code, LocalDate date) {
+	public String execute(String code, LocalDate date) {
 		return strategy.getCurrency(code, date);
 	}
 
