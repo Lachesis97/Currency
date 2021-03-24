@@ -2,6 +2,7 @@ package pl.streamsoft.Get;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 import org.apache.http.HttpEntity;
@@ -29,6 +30,9 @@ public class GetCurrencyJsonNBP implements RateService {
 	}
 
 	public String getCurrency(String code, LocalDate date) {
+		if (date.getDayOfWeek().equals(DayOfWeek.SUNDAY) || date.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+			return null;
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 

@@ -10,7 +10,7 @@ import pl.streamsoft.exceptions.MappingJsonException;
 public class NbpJsonConverter implements ConvertService {
 
 	public Currency convertDataToObj(String data) {
-		data = ChangeJsonNBP.change(data);
+		data = AdaptJsonStringNBP.adapt(data);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
