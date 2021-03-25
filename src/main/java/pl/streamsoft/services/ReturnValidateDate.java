@@ -17,6 +17,8 @@ public class ReturnValidateDate {
 
 			date = date.minusDays(1);
 
+			System.out.println(date);
+
 			result = strategy.getCurrency(code.toUpperCase(), date);
 			i++;
 			if (i == 10) {

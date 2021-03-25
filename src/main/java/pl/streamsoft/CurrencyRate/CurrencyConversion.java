@@ -13,10 +13,11 @@ package pl.streamsoft.CurrencyRate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import pl.streamsoft.Get.GetCurrencyJsonNBP;
+import pl.streamsoft.services.CacheMap;
 import pl.streamsoft.services.ConvertService;
 import pl.streamsoft.services.Currency;
 import pl.streamsoft.services.FutureDateToTodaysDate;
@@ -28,6 +29,7 @@ public class CurrencyConversion {
 
 	private RateService rateService;
 	private ConvertService convertService;
+	Map<String, Currency> cache = new HashMap<>();
 
 	public CurrencyConversion() {
 		rateService = new GetCurrencyJsonNBP();
@@ -45,29 +47,17 @@ public class CurrencyConversion {
 		date = FutureDateToTodaysDate.dataValidation(date);
 		date = ReturnValidateDate.dataValidation(code, date, rateService);
 
-		List<Currency> cache = new ArrayList<Currency>();
 		Currency existCurrency = new Currency();
 		Currency newCurrency = new Currency();
 
-		Boolean doesNotExist = true;
+		String key = code + date.toString();
+		CacheMap cacheMap = new CacheMap(key, cache);
+		existCurrency = cacheMap.cacheCurrency();
 
-		for (Currency currency : cache) {
-			if (currency.getCode().equals(code) && currency.getDate().equals(date)) {
-				doesNotExist = false;
-				existCurrency.setName(currency.getName());
-				existCurrency.setCode(currency.getCode());
-				existCurrency.setDate(currency.getDate());
-				existCurrency.setRate(currency.getRate());
-			}
-
-		}
-
-		if (doesNotExist) {
+		if (existCurrency == null) {
 			String result = rateService.getCurrency(code.toUpperCase(), date);
-
 			newCurrency = convertService.convertDataToObj(result);
-
-			cache.add(newCurrency);
+			cache.put(key, newCurrency);
 
 			return amount.multiply(newCurrency.getRate());
 		}
