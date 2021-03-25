@@ -29,11 +29,8 @@ public class DataAlorithmWithoutNbpTest {
 	public void init() {
 
 		Mockito.when(getCurrencyJsonNBP.getCurrency("eur", LocalDate.of(2021, 3, 21)))
-				.thenReturn(prepareWeekendReaction(LocalDate.of(2021, 3, 21)));
-		Mockito.when(getCurrencyJsonNBP.getCurrency("eur", LocalDate.of(2021, 3, 20)))
-				.thenReturn(prepareWeekendReaction(LocalDate.of(2021, 3, 20)));
-		Mockito.when(getCurrencyJsonNBP.getCurrency("eur", LocalDate.of(2021, 3, 19)))
 				.thenReturn(prepareWeekendReaction(LocalDate.of(2021, 3, 19)));
+
 	}
 
 	@Test
@@ -48,7 +45,7 @@ public class DataAlorithmWithoutNbpTest {
 
 		// when
 		@SuppressWarnings("static-access")
-		LocalDate checkedDate = returnValidateDate.dataValidation(code, dateWithoutRate, new GetCurrencyJsonNBP());
+		LocalDate checkedDate = returnValidateDate.dataValidation(code, dateWithoutRate, getCurrencyJsonNBP);
 
 		// then
 		Assertions.assertThat(checkedDate).isEqualTo(shouldReturn);
@@ -58,10 +55,10 @@ public class DataAlorithmWithoutNbpTest {
 	private String prepareWeekendReaction(LocalDate dateWithoutRate) {
 		if (dateWithoutRate.getDayOfWeek().equals(DayOfWeek.SUNDAY)
 				|| dateWithoutRate.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
-			System.out.println("tak");
+			System.out.println("nie");
 			return null;
 		}
-
+		System.out.println("tak");
 		return "This is not null";
 	}
 
