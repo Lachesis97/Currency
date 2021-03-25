@@ -1,19 +1,17 @@
 package pl.streamsoft.services;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Context {
-	
-	private Strategy strategy;
-	 
-    public Context(Strategy strategy) {
-        this.strategy = strategy;
-    }
-    
-    
-    public Currency execute(String code, String date){
-        return strategy.getCurrency(code, date);
-    }
-    
+
+	private RateService strategy;
+
+	public Context(RateService strategy) {
+		this.strategy = strategy;
+	}
+
+	public String execute(String code, LocalDate date) {
+		return strategy.getCurrency(code, date);
+	}
 
 }

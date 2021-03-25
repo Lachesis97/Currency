@@ -9,45 +9,61 @@
  *
  */
 
-
 package pl.streamsoft.CurrencyRate;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
-import pl.streamsoft.services.Context;
+import pl.streamsoft.Get.GetCurrencyJsonNBP;
+import pl.streamsoft.services.CacheMap;
+import pl.streamsoft.services.ConvertService;
 import pl.streamsoft.services.Currency;
-import pl.streamsoft.services.FutureDateCheckService;
-import pl.streamsoft.services.Strategy;
-
+import pl.streamsoft.services.FutureDateToTodaysDate;
+import pl.streamsoft.services.NbpJsonConverter;
+import pl.streamsoft.services.RateService;
+import pl.streamsoft.services.ReturnValidateDate;
 
 public class CurrencyConversion {
-	
-	public static BigDecimal conversion(String code, String dateS, BigDecimal amount, Strategy strategy) {
-		
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		
-		if(dateS == "today" || dateS == "dzisiaj" || dateS == "dziœ" || dateS == "" || dateS == "now") {
 
-			dateS = dateFormat.format( new Date() );
-			
-		} else {
-			
-			FutureDateCheckService getCurrancyDateService = new FutureDateCheckService();
-			dateS = getCurrancyDateService.datacheck(dateS);
-			
+	private RateService rateService;
+	private ConvertService convertService;
+	Map<String, Currency> cache = new HashMap<>();
+
+	public CurrencyConversion() {
+		rateService = new GetCurrencyJsonNBP();
+		convertService = new NbpJsonConverter();
+	}
+
+	public CurrencyConversion(RateService rateService, ConvertService convertService) {
+		this.rateService = rateService;
+		this.convertService = convertService;
+
+	}
+
+	public BigDecimal conversion(String code, LocalDate date, BigDecimal amount) {
+
+		date = FutureDateToTodaysDate.dataValidation(date);
+		date = ReturnValidateDate.dataValidation(code, date, rateService);
+
+		Currency existCurrency = new Currency();
+		Currency newCurrency = new Currency();
+
+		String key = code + date.toString();
+		CacheMap cacheMap = new CacheMap(key, cache);
+		existCurrency = cacheMap.cacheCurrency();
+
+		if (existCurrency == null) {
+			String result = rateService.getCurrency(code.toUpperCase(), date);
+			newCurrency = convertService.convertDataToObj(result);
+			cache.put(key, newCurrency);
+
+			return amount.multiply(newCurrency.getRate());
 		}
-		
-		
-		Context context = new Context(strategy);
-		
-		Currency currency = context.execute(code.toUpperCase(), dateS);
-		
-		
-		return amount.multiply(currency.getRate().setScale(4));
+
+		return amount.multiply(existCurrency.getRate());
+
 	}
 
 }

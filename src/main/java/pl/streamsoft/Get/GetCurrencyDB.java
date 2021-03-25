@@ -1,9 +1,6 @@
 package pl.streamsoft.Get;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -11,59 +8,50 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import pl.streamsoft.exceptions.CloseConnectionException;
+import pl.streamsoft.DbServices.CurrencyCodeTable;
+import pl.streamsoft.DbServices.CurrencyRatesTable;
 import pl.streamsoft.exceptions.NoDbResultException;
-import pl.streamsoft.services.Currency;
-import pl.streamsoft.services.CurrencyTable;
-import pl.streamsoft.services.InsertCurrencyDbService;
-import pl.streamsoft.services.Strategy;
-import pl.streamsoft.services.StringToDate;
+import pl.streamsoft.services.RateService;
 
-public class GetCurrencyDB implements Strategy {
+public class GetCurrencyDB implements RateService {
 
 	private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Currency");
-	
- 
-	public Currency getCurrency(String code, String date) {
 
-		
-		StringToDate stringToDate = new StringToDate();
-		
+	@SuppressWarnings("unused")
+	public String getCurrency(String code, LocalDate date) {
+
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		Query query = entityManager.createNamedQuery("GetCurrencyDB");
 		query.setParameter("code", code);
-		query.setParameter("date", stringToDate.conversion(date));
-		
-		CurrencyTable currencyTable = null;
-		
-		
+		query.setParameter("date", date);
+
+		CurrencyCodeTable currencyCodeTable = null;
+		CurrencyRatesTable currencyRatesTable = null;
+
 		try {
-			
-			currencyTable = (CurrencyTable) query.getSingleResult();
-			
-			if(currencyTable != null) {
-			Currency currency = new Currency();
-			
-			currency.setName(currencyTable.getName());
-			currency.setCode(currencyTable.getName());
-			currency.setDate(currencyTable.getDate());
-			currency.setRate(currencyTable.getRate());
-			return currency;
-			} else {
-				return null;
+
+			currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
+
+			if (currencyCodeTable != null) {
+
+				String currString;
+
+				currString = (currencyCodeTable.getCode() + "," + currencyCodeTable.getName() + ","
+						+ currencyRatesTable.getDate() + "," + currencyRatesTable.getRate());
+
+				return currString;
 			}
-			
 		} catch (NoResultException e) {
-			if(currencyTable == null) {
-				return null;
-			} else {
-				throw new NoDbResultException("Brak wyniku w bazie danych.");
+			if (currencyCodeTable == null) {
+				throw new NoDbResultException("Brak wyniku w bazie danych.", e);
+
 			}
+
 		} finally {
 			entityManager.close();
 		}
-	
-		
+		return null;
+
 	}
 
 }

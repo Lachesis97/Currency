@@ -1,91 +1,70 @@
 package pl.streamsoft.Get;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpResponseException;
+import org.apache.http.NoHttpResponseException;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.RuntimeCryptoException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import pl.streamsoft.exceptions.ExecuteHttpRequestException;
+import pl.streamsoft.services.RateService;
 
-import pl.streamsoft.exceptions.CloseConnectionException;
-import pl.streamsoft.services.Context;
-import pl.streamsoft.services.Currency;
-import pl.streamsoft.services.GetCurrancyDateCheckService;
-import pl.streamsoft.services.JsonStringConvert;
-import pl.streamsoft.services.Strategy;
-import pl.streamsoft.services.StringToDate;
-
-public class GetCurrencyJsonNBP implements Strategy {
-	
-	private final CloseableHttpClient httpClient = HttpClients.createDefault();
+public class GetCurrencyJsonNBP implements RateService {
 
 	String url;
-	
-	
+
+	public GetCurrencyJsonNBP() {
+		url = "http://api.nbp.pl/api/exchangerates/rates/a/";
+	}
+
 	public GetCurrencyJsonNBP(String url) {
 		this.url = url;
 	}
 
-	public Currency getCurrency(String code, String date){
-			
-		
-		try {
-                
-              
-              GetCurrancyDateCheckService getCurrancyDateCheckService = new GetCurrancyDateCheckService();
-              
-              String checkedDate = getCurrancyDateCheckService.checkDate(code, date);
-              
-              
-              
-              HttpGet request = new HttpGet(url + code + "/" + checkedDate + "/?format=json");
-              
-              CloseableHttpResponse response = httpClient.execute(request);
-              
-              HttpEntity entity = response.getEntity();
- 			 
- 			 if (entity != null) {
- 				 
- 				 String result = EntityUtils.toString(entity);  
- 			 
- 				 JsonStringConvert convert = new JsonStringConvert(result);
- 				 
- 				 String json = convert.convert();
- 				 
- 				 Currency currency = new Currency();
- 	              
- 	             ObjectMapper objectMapper = new ObjectMapper();
- 	              
- 	             currency = objectMapper.readValue(json, Currency.class);
- 	             
- 	             System.out.println("Pobrano kurs z dnia: \"" + checkedDate + "\"");
- 				 
- 	             return currency;
- 			 }
-              
-		} catch(Exception e) {
-			throw new RuntimeException(e);
-		}  finally {
-			try {
-				httpClient.close();
-			} catch (IOException e) {
-				throw new CloseConnectionException("Nie uda³o siê zamkn¹æ po³¹czenia");
-			}
+	public String getCurrency(String code, LocalDate date) {
+		if (date.getDayOfWeek().equals(DayOfWeek.SUNDAY) || date.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+			return null;
 		}
-		return null;
 
-		
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		try {
+
+			HttpGet request = new HttpGet(url + code + "/" + date + "/?format=json");
+
+			CloseableHttpResponse response = httpClient.execute(request);
+
+			HttpEntity entity = response.getEntity();
+
+			if (response.getStatusLine().getStatusCode() == 200) {
+
+				String result = EntityUtils.toString(entity);
+
+				return result;
+			} else {
+				return null;
+			}
+
+		} catch (NoHttpResponseException e) {
+			throw new ExecuteHttpRequestException("Brak odpowiedzi ze strony serwera / GetCurrencyJsonNBP.java", e);
+		} catch (ClientProtocolException e) {
+			throw new ExecuteHttpRequestException("B³¹d ¿¹dania Http / GetCurrencyJsonNBP.java", e);
+		} catch (ConnectException e) {
+			throw new ExecuteHttpRequestException("Connection timeout / GetCurrencyJsonNBP.java", e);
+		} catch (UnknownHostException e) {
+			throw new ExecuteHttpRequestException("Nieznany host / GetCurrencyJsonNBP.java", e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
 	}
-
 
 }
