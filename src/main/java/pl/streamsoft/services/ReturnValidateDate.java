@@ -13,20 +13,17 @@ public class ReturnValidateDate {
 
 		result = strategy.getCurrency(code.toUpperCase(), date);
 
-		while (result == null) {
+		while (result == null || result.equals("SUNDAY") || result.equals("SATURDAY")) {
 
 			date = date.minusDays(1);
 
-			System.out.println(date);
-
 			result = strategy.getCurrency(code.toUpperCase(), date);
+			System.out.println(result);
 			i++;
 			if (i == 10) {
 				throw new DateValidationException("B³êdne argumenty wyszukiwania lub nie ma takiego kursu.");
 			}
 		}
-
-		System.out.println("Pobrano kurs z dnia: \"" + date + "\"");
 
 		return date;
 

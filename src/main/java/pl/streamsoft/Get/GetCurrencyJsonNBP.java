@@ -30,8 +30,9 @@ public class GetCurrencyJsonNBP implements RateService {
 	}
 
 	public String getCurrency(String code, LocalDate date) {
-		if (date.getDayOfWeek().equals(DayOfWeek.SUNDAY) || date.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
-			return null;
+		String result = checkWeekend(date);
+		if (result != null) {
+			return result;
 		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -46,7 +47,7 @@ public class GetCurrencyJsonNBP implements RateService {
 
 			if (response.getStatusLine().getStatusCode() == 200) {
 
-				String result = EntityUtils.toString(entity);
+				result = EntityUtils.toString(entity);
 
 				return result;
 			} else {
@@ -65,6 +66,15 @@ public class GetCurrencyJsonNBP implements RateService {
 			throw new RuntimeException(e);
 		}
 
+	}
+
+	public String checkWeekend(LocalDate date) {
+		if (date.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
+			return "SUNDAY";
+		} else if (date.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+			return "SATURDAY";
+		}
+		return null;
 	}
 
 }

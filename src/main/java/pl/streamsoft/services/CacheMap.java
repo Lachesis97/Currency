@@ -1,12 +1,12 @@
 package pl.streamsoft.services;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CacheMap {
 
 	String key;
-	Map<String, Currency> cache = new HashMap<>();
+	Map<String, Currency> cache = new LinkedHashMap<String, Currency>(5);
 
 	public CacheMap(String key, Map<String, Currency> cache) {
 		super();
