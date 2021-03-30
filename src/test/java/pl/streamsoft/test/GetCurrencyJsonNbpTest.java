@@ -21,10 +21,10 @@ public class GetCurrencyJsonNbpTest {
 		String badUrl = "http://api.nbp.pl/api/exchangerates/rates/";
 
 		// when
-		Currency result1 = new GetCurrencyJsonNBP().getCurrency("EUR", LocalDate.of(2021, 3, 22));
-		Currency result2 = new GetCurrencyJsonNBP(url).getCurrency("EUR", LocalDate.of(2021, 3, 22));
-		Currency result3 = new GetCurrencyJsonNBP().getCurrency("EUR", LocalDate.of(2021, 3, 21));
-		Currency result4 = new GetCurrencyJsonNBP(badUrl).getCurrency("EUR", LocalDate.of(2021, 3, 22));
+		Currency result1 = new GetCurrencyJsonNBP().validateDate("EUR", LocalDate.of(2021, 3, 22));
+		Currency result2 = new GetCurrencyJsonNBP(url).validateDate("EUR", LocalDate.of(2021, 3, 22));
+		Currency result3 = new GetCurrencyJsonNBP().validateDate("EUR", LocalDate.of(2021, 3, 21));
+		Currency result4 = new GetCurrencyJsonNBP(badUrl).validateDate("EUR", LocalDate.of(2021, 3, 22));
 
 		// then
 		Assertions.assertThat(result1 != null && result2 != null && result3 == null && result4 == null);
@@ -40,7 +40,7 @@ public class GetCurrencyJsonNbpTest {
 
 		// when
 		Throwable thrown = catchThrowable(
-				() -> new GetCurrencyJsonNBP(url).getCurrency("EUR", LocalDate.of(2021, 3, 22)));
+				() -> new GetCurrencyJsonNBP(url).validateDate("EUR", LocalDate.of(2021, 3, 22)));
 
 		// then
 		Assertions.assertThat(thrown).isInstanceOf(ExecuteHttpRequestException.class)
@@ -57,7 +57,7 @@ public class GetCurrencyJsonNbpTest {
 
 		// when
 		Throwable thrown = catchThrowable(
-				() -> new GetCurrencyJsonNBP(url).getCurrency("EUR", LocalDate.of(2021, 3, 22)));
+				() -> new GetCurrencyJsonNBP(url).validateDate("EUR", LocalDate.of(2021, 3, 22)));
 
 		// then
 		Assertions.assertThat(thrown).isInstanceOf(ExecuteHttpRequestException.class)

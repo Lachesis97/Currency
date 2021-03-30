@@ -4,15 +4,26 @@ import java.time.LocalDate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
+import pl.streamsoft.exceptions.DeleteFromDataBaseException;
 import pl.streamsoft.services.Currency;
 import pl.streamsoft.services.DataProviderService;
 
 public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 	private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Currency");
+	private DataProviderService nextStrategy;
+
+	public CurrencyRepository() {
+
+	}
+
+	public CurrencyRepository(DataProviderService dataProviderService) {
+		this.nextStrategy = dataProviderService;
+	}
 
 	@Override
 	public void addCurrency(Currency currency) {
@@ -29,12 +40,27 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 	}
 
 	@Override
-	public void deleteCurrency(String code, LocalDate date) {
+	public void deleteSingleRate(String code, LocalDate date) {
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		EntityTransaction entityTransaction;
+
+		entityTransaction = entityManager.getTransaction();
+		entityTransaction.begin();
+		Query query = entityManager.createQuery("DELETE CurrencyRatesTable r WHERE r.date = :date AND r.cid = :cid");
+		query.setParameter("date", date);
+		query.setParameter("cid", getCurrencyId(code.toUpperCase()));
+		try {
+			query.executeUpdate();
+			entityTransaction.commit();
+
+		} catch (IllegalStateException e) {
+			throw new DeleteFromDataBaseException("èle sformu≥owane zapytanie", e);
+		}
 
 	}
 
 	@Override
-	public void updateCurrency(String code, LocalDate date) {
+	public void updateSingleRate(String code, LocalDate date) {
 
 	}
 
@@ -46,11 +72,16 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 		query.setParameter("code", code.toUpperCase());
 		CurrencyCodeTable currencyCodeTable = null;
 
-		currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
+		try {
+			currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
+			return currencyCodeTable.getId();
+		} catch (Exception e) {
+			// TODO: handle exception
+		} finally {
+			entityManager.close();
+		}
+		return 0;
 
-		entityManager.close();
-
-		return currencyCodeTable.getId();
 	}
 
 	@Override
@@ -116,17 +147,54 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 					currency = new Currency(currencyCodeTable.getName(), currencyCodeTable.getCode(),
 							currencyRatesTable.getDate(), currencyRatesTable.getRate());
 				}
-			} else {
 				return currency;
+			} else {
+				if (nextStrategy != null) {
+					return nextStrategy.getCurrency(code, date);
+				}
+				return null;
+
 			}
 
 		} catch (NoResultException e) {
-			return currency;
+			if (nextStrategy != null) {
+				return nextStrategy.getCurrency(code, date);
+			}
+			return null;
 		} finally {
 			entityManager.close();
 		}
-		return currency;
 
+	}
+
+	@Override
+	public Currency validateDate(String code, LocalDate date) {
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		Query query = entityManager.createNamedQuery("CurrencyCodeTable.GetCurrency");
+		query.setParameter("code", code.toUpperCase());
+		query.setParameter("date", date);
+		CurrencyCodeTable currencyCodeTable = null;
+		Currency currency = null;
+
+		try {
+			currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
+
+			if (currencyCodeTable != null) {
+				for (CurrencyRatesTable currencyRatesTable : currencyCodeTable.getRate()) {
+					currency = new Currency(currencyCodeTable.getName(), currencyCodeTable.getCode(),
+							currencyRatesTable.getDate(), currencyRatesTable.getRate());
+				}
+				return currency;
+			} else {
+				return null;
+
+			}
+
+		} catch (NoResultException e) {
+			return null;
+		} finally {
+			entityManager.close();
+		}
 	}
 
 }

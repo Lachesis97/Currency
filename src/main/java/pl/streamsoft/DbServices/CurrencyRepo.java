@@ -8,9 +8,9 @@ public interface CurrencyRepo {
 
 	public void addCurrency(Currency currency);
 
-	public void deleteCurrency(String code, LocalDate date);
+	public void deleteSingleRate(String code, LocalDate date);
 
-	public void updateCurrency(String code, LocalDate date);
+	public void updateSingleRate(String code, LocalDate date);
 
 	public boolean rateExists(String code, LocalDate date);
 

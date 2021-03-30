@@ -11,13 +11,13 @@ public class ReturnValidateDate {
 		int i = 0;
 		Currency result;
 
-		result = strategy.getCurrency(code.toUpperCase(), date);
+		result = strategy.validateDate(code.toUpperCase(), date);
 
 		while (result == null) {
 
 			date = date.minusDays(1);
 
-			result = strategy.getCurrency(code.toUpperCase(), date);
+			result = strategy.validateDate(code.toUpperCase(), date);
 
 			i++;
 			if (i == 10) {

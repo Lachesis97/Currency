@@ -11,36 +11,22 @@
 
 package pl.streamsoft.CurrencyRate;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import pl.streamsoft.DbServices.CurrencyRepository;
-import pl.streamsoft.Get.GetCurrencyCacheMap;
 import pl.streamsoft.Get.GetCurrencyJsonNBP;
 import pl.streamsoft.services.CacheService;
 import pl.streamsoft.services.ConvertService;
 import pl.streamsoft.services.Currency;
 import pl.streamsoft.services.DataProviderService;
+import pl.streamsoft.services.ExtendedCacheMap;
 import pl.streamsoft.services.FutureDateToTodaysDate;
+import pl.streamsoft.services.GetCurrencyCacheMap;
 import pl.streamsoft.services.NbpJsonConverter;
 import pl.streamsoft.services.ReturnValidateDate;
 
 public class CurrencyConversion {
-	private int MAX_ENTRIES = 20;
-	Map<String, Currency> cache = new LinkedHashMap<String, Currency>() {
-
-		protected boolean removeEldestEntry(Map.Entry<String, Currency> eldest) {
-
-			return cache.size() > MAX_ENTRIES;
-		}
-	};
-
-	private ConvertService convertService = new NbpJsonConverter();
-	private DataProviderService rateService = new GetCurrencyJsonNBP(convertService);
-	private CacheService cacheService = new GetCurrencyCacheMap(cache, MAX_ENTRIES);
-	Currency currency = new Currency();
 
 	public CurrencyConversion() {
 	}
@@ -49,7 +35,16 @@ public class CurrencyConversion {
 		this.MAX_ENTRIES = MAX_ENTRIES;
 	}
 
-	public CurrencyConversion(CacheService cacheService, int MAX_ENTRIES) {
+	public CurrencyConversion(DataProviderService rateService) {
+		this.rateService = rateService;
+	}
+
+	public CurrencyConversion(int MAX_ENTRIES, DataProviderService rateService) {
+		this.MAX_ENTRIES = MAX_ENTRIES;
+		this.rateService = rateService;
+	}
+
+	public CurrencyConversion(int MAX_ENTRIES, CacheService cacheService) {
 		this.cacheService = cacheService;
 		this.MAX_ENTRIES = MAX_ENTRIES;
 	}
@@ -68,7 +63,15 @@ public class CurrencyConversion {
 
 	}
 
-	public BigDecimal conversion(String code, LocalDate date, BigDecimal amount) {
+	private int MAX_ENTRIES = 20;
+
+	Map<String, Currency> cache = new ExtendedCacheMap<String, Currency>();
+	private ConvertService convertService = new NbpJsonConverter();
+	private DataProviderService rateService = new GetCurrencyJsonNBP(convertService);
+	private CacheService cacheService = new GetCurrencyCacheMap(cache);
+	Currency currency = new Currency();
+
+	public Currency conversion(String code, LocalDate date) {
 
 		date = FutureDateToTodaysDate.dataValidation(date);
 		date = ReturnValidateDate.dataValidation(code, date, rateService);
@@ -77,24 +80,15 @@ public class CurrencyConversion {
 		currency = cacheService.checkAndGetIfExist(key);
 
 		if (currency == null) {
-			CurrencyRepository currencyRepository = new CurrencyRepository();
-			currency = currencyRepository.getCurrency(code, date);
-			cacheService.putToCache(currency, key);
-
-		}
-
-		if (currency == null) {
 			currency = rateService.getCurrency(code.toUpperCase(), date);
 
+			cacheService.putToCache(currency, key, MAX_ENTRIES);
 			CurrencyRepository currencyRepository = new CurrencyRepository();
 			currencyRepository.addCurrency(currency);
 
-			cacheService.putToCache(currency, key);
-
-			return currency.currencyToPln(amount);
 		}
 
-		return currency.currencyToPln(amount);
+		return currency;
 
 	}
 

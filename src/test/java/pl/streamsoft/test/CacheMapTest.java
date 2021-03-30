@@ -1,6 +1,5 @@
 package pl.streamsoft.test;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.assertj.core.api.Assertions;
@@ -20,7 +19,7 @@ public class CacheMapTest {
 
 		// when
 
-		conversion.conversion("eur", LocalDate.of(2021, 3, 22), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 22));
 
 		// then
 		Assertions.assertThat(conversion.getCache()).isNotEmpty();
@@ -35,14 +34,14 @@ public class CacheMapTest {
 		Assertions.assertThat(conversion.getCache()).isEmpty();
 
 		// when
-		conversion.conversion("eur", LocalDate.of(2021, 3, 22), new BigDecimal("1"));
-		conversion.conversion("eur", LocalDate.of(2021, 3, 22), new BigDecimal("1"));
-		conversion.conversion("eur", LocalDate.of(2021, 3, 23), new BigDecimal("1"));
-		conversion.conversion("eur", LocalDate.of(2021, 3, 23), new BigDecimal("1"));
-		conversion.conversion("eur", LocalDate.of(2021, 3, 24), new BigDecimal("1"));
-		conversion.conversion("eur", LocalDate.of(2021, 3, 24), new BigDecimal("1"));
-		conversion.conversion("eur", LocalDate.of(2021, 3, 25), new BigDecimal("1"));
-		conversion.conversion("eur", LocalDate.of(2021, 3, 25), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 22));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 22));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 23));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 23));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 24));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 24));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 25));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 25));
 
 		// then
 		Assertions.assertThat(conversion.getCache()).size().isEqualTo(4);
@@ -56,12 +55,13 @@ public class CacheMapTest {
 		int maxEntries = 2;
 
 		CurrencyConversion conversion = new CurrencyConversion(maxEntries);
+		Assertions.assertThat(conversion.getCache()).isEmpty();
 
 		// when
-		conversion.conversion("eur", LocalDate.of(2021, 3, 22), new BigDecimal("1"));
-		conversion.conversion("eur", LocalDate.of(2021, 3, 23), new BigDecimal("1"));
-		conversion.conversion("eur", LocalDate.of(2021, 3, 24), new BigDecimal("1"));
-		conversion.conversion("eur", LocalDate.of(2021, 3, 25), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 22));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 23));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 24));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 25));
 
 		// then
 		Assertions.assertThat(conversion.getCache()).size().isEqualTo(2);

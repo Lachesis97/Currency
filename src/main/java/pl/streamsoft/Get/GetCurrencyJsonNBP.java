@@ -23,7 +23,8 @@ import pl.streamsoft.services.NbpJsonConverter;
 public class GetCurrencyJsonNBP implements DataProviderService {
 
 	private String url = "http://api.nbp.pl/api/exchangerates/rates/a/";
-	private ConvertService convertService = new NbpJsonConverter();;
+	private ConvertService convertService = new NbpJsonConverter();
+	private DataProviderService nextStrategy;
 
 	public GetCurrencyJsonNBP() {
 
@@ -39,13 +40,59 @@ public class GetCurrencyJsonNBP implements DataProviderService {
 
 	}
 
-	public GetCurrencyJsonNBP(String url, ConvertService convertService) {
+	public GetCurrencyJsonNBP(DataProviderService dataProviderService) {
+		this.nextStrategy = dataProviderService;
+
+	}
+
+	public GetCurrencyJsonNBP(String url, ConvertService convertService, DataProviderService dataProviderService) {
 		this.url = url;
 		this.convertService = convertService;
+		this.nextStrategy = dataProviderService;
 
 	}
 
 	public Currency getCurrency(String code, LocalDate date) {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		try {
+
+			HttpGet request = new HttpGet(url + code + "/" + date + "/?format=json");
+
+			CloseableHttpResponse response = httpClient.execute(request);
+
+			System.out.println("NBP");
+
+			HttpEntity entity = response.getEntity();
+
+			if (response.getStatusLine().getStatusCode() == 200) {
+
+				Currency currency = convertService.convertDataToObj(EntityUtils.toString(entity));
+
+				return currency;
+			} else {
+				if (nextStrategy != null) {
+					return nextStrategy.getCurrency(code, date);
+				}
+				return nextStrategy.getCurrency(code, date);
+			}
+
+		} catch (NoHttpResponseException e) {
+			throw new ExecuteHttpRequestException("Brak odpowiedzi ze strony serwera / GetCurrencyJsonNBP.java", e);
+		} catch (ClientProtocolException e) {
+			throw new ExecuteHttpRequestException("B³¹d ¿¹dania Http / GetCurrencyJsonNBP.java", e);
+		} catch (ConnectException e) {
+			throw new ExecuteHttpRequestException("Connection timeout / GetCurrencyJsonNBP.java", e);
+		} catch (UnknownHostException e) {
+			throw new ExecuteHttpRequestException("Nieznany host / GetCurrencyJsonNBP.java", e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	@Override
+	public Currency validateDate(String code, LocalDate date) {
 		if (date.getDayOfWeek().equals(DayOfWeek.SUNDAY) || date.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
 			return null;
 		}
@@ -57,6 +104,8 @@ public class GetCurrencyJsonNBP implements DataProviderService {
 			HttpGet request = new HttpGet(url + code + "/" + date + "/?format=json");
 
 			CloseableHttpResponse response = httpClient.execute(request);
+
+			System.out.println("NBP");
 
 			HttpEntity entity = response.getEntity();
 
@@ -80,7 +129,6 @@ public class GetCurrencyJsonNBP implements DataProviderService {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
 }
