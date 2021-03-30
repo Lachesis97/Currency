@@ -37,6 +37,11 @@ public class Currency {
 		super();
 	}
 
+	public BigDecimal currencyToPln(BigDecimal foreignCurrency) {
+		return foreignCurrency.multiply(rate);
+
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -62,7 +67,7 @@ public class Currency {
 	}
 
 	public BigDecimal getRate() {
-		return rate.setScale(4);
+		return rate;
 	}
 
 	public void setRate(BigDecimal rate) {

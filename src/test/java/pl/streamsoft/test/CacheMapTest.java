@@ -2,97 +2,69 @@ package pl.streamsoft.test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import pl.streamsoft.CurrencyRate.CurrencyConversion;
-import pl.streamsoft.services.Currency;
 
 public class CacheMapTest {
 
 	@Test
-	public void should_return_same_object_from_cache() {
+	public void should_add_to_cache() {
 
 		// given
-		String code = "eur";
-		int maxEntries = 10;
+		CurrencyConversion conversion = new CurrencyConversion();
 
-		Map<String, Currency> cache = new LinkedHashMap<String, Currency>();
-		CurrencyConversion conversion = new CurrencyConversion(maxEntries);
+		Assertions.assertThat(conversion.getCache()).isEmpty();
 
 		// when
 
-		conversion.conversion(code, LocalDate.of(2021, 3, 22), new BigDecimal("1"));
-		Currency currency = conversion.getExistCurrency();
-
-		conversion.conversion(code, LocalDate.of(2021, 3, 22), new BigDecimal("1"));
-		cache.put(code + LocalDate.of(2021, 3, 22).toString(), conversion.getExistCurrency());
+		conversion.conversion("eur", LocalDate.of(2021, 3, 22), new BigDecimal("1"));
 
 		// then
-		Assertions.assertThat(currency).isEqualTo(null);
-		Assertions.assertThat(conversion.getCache()).isEqualTo(cache);
+		Assertions.assertThat(conversion.getCache()).isNotEmpty();
 
 	}
 
 	@Test
-	public void should_return_map_with_unique_currency_objects() {
+	public void should_get_cache_with_unique_currency_objects() {
 
 		// given
-		String code = "eur";
-		int maxEntries = 10;
-
-		Map<String, Currency> cache = new LinkedHashMap<String, Currency>();
-		CurrencyConversion conversion = new CurrencyConversion(maxEntries);
+		CurrencyConversion conversion = new CurrencyConversion();
+		Assertions.assertThat(conversion.getCache()).isEmpty();
 
 		// when
-
-		conversion.conversion(code, LocalDate.of(2021, 3, 22), new BigDecimal("1"));
-		cache.put(code + LocalDate.of(2021, 3, 22).toString(), conversion.getNewCurrency());
-
-		conversion.conversion(code, LocalDate.of(2021, 3, 23), new BigDecimal("1"));
-		cache.put(code + LocalDate.of(2021, 3, 23).toString(), conversion.getNewCurrency());
-
-		conversion.conversion(code, LocalDate.of(2021, 3, 24), new BigDecimal("1"));
-		cache.put(code + LocalDate.of(2021, 3, 24).toString(), conversion.getNewCurrency());
-
-		conversion.conversion(code, LocalDate.of(2021, 3, 25), new BigDecimal("1"));
-		cache.put(code + LocalDate.of(2021, 3, 25).toString(), conversion.getNewCurrency());
-
-		conversion.conversion(code, LocalDate.of(2021, 3, 22), new BigDecimal("1"));
-		conversion.conversion(code, LocalDate.of(2021, 3, 23), new BigDecimal("1"));
-		conversion.conversion(code, LocalDate.of(2021, 3, 24), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 22), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 22), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 23), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 23), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 24), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 24), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 25), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 25), new BigDecimal("1"));
 
 		// then
-		Assertions.assertThat(conversion.getCache()).isEqualTo(cache);
+		Assertions.assertThat(conversion.getCache()).size().isEqualTo(4);
 
 	}
 
 	@Test
-	public void should_return_specified_number_of_recent_entries() {
+	public void should_cache_with_specified_number_of_recent_entries() {
 
 		// given
-		String code = "eur";
 		int maxEntries = 2;
 
-		Map<String, Currency> cache = new LinkedHashMap<String, Currency>();
 		CurrencyConversion conversion = new CurrencyConversion(maxEntries);
 
 		// when
-		conversion.conversion(code, LocalDate.of(2021, 3, 22), new BigDecimal("1"));
-
-		conversion.conversion(code, LocalDate.of(2021, 3, 23), new BigDecimal("1"));
-
-		conversion.conversion(code, LocalDate.of(2021, 3, 24), new BigDecimal("1"));
-		cache.put(code + LocalDate.of(2021, 3, 24).toString(), conversion.getNewCurrency());
-
-		conversion.conversion(code, LocalDate.of(2021, 3, 25), new BigDecimal("1"));
-		cache.put(code + LocalDate.of(2021, 3, 25).toString(), conversion.getNewCurrency());
+		conversion.conversion("eur", LocalDate.of(2021, 3, 22), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 23), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 24), new BigDecimal("1"));
+		conversion.conversion("eur", LocalDate.of(2021, 3, 25), new BigDecimal("1"));
 
 		// then
-		Assertions.assertThat(conversion.getCache()).isEqualTo(cache);
+		Assertions.assertThat(conversion.getCache()).size().isEqualTo(2);
 
 	}
 

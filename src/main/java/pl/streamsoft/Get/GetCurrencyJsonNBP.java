@@ -15,24 +15,39 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import pl.streamsoft.exceptions.ExecuteHttpRequestException;
-import pl.streamsoft.services.RateService;
+import pl.streamsoft.services.ConvertService;
+import pl.streamsoft.services.Currency;
+import pl.streamsoft.services.DataProviderService;
+import pl.streamsoft.services.NbpJsonConverter;
 
-public class GetCurrencyJsonNBP implements RateService {
+public class GetCurrencyJsonNBP implements DataProviderService {
 
-	String url;
+	private String url = "http://api.nbp.pl/api/exchangerates/rates/a/";
+	private ConvertService convertService = new NbpJsonConverter();;
 
 	public GetCurrencyJsonNBP() {
-		url = "http://api.nbp.pl/api/exchangerates/rates/a/";
+
+	}
+
+	public GetCurrencyJsonNBP(ConvertService convertService) {
+		this.convertService = convertService;
+
 	}
 
 	public GetCurrencyJsonNBP(String url) {
 		this.url = url;
+
 	}
 
-	public String getCurrency(String code, LocalDate date) {
-		String result = checkWeekend(date);
-		if (result != null) {
-			return result;
+	public GetCurrencyJsonNBP(String url, ConvertService convertService) {
+		this.url = url;
+		this.convertService = convertService;
+
+	}
+
+	public Currency getCurrency(String code, LocalDate date) {
+		if (date.getDayOfWeek().equals(DayOfWeek.SUNDAY) || date.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+			return null;
 		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -47,9 +62,9 @@ public class GetCurrencyJsonNBP implements RateService {
 
 			if (response.getStatusLine().getStatusCode() == 200) {
 
-				result = EntityUtils.toString(entity);
+				Currency currency = convertService.convertDataToObj(EntityUtils.toString(entity));
 
-				return result;
+				return currency;
 			} else {
 				return null;
 			}
@@ -66,15 +81,6 @@ public class GetCurrencyJsonNBP implements RateService {
 			throw new RuntimeException(e);
 		}
 
-	}
-
-	public String checkWeekend(LocalDate date) {
-		if (date.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
-			return "SUNDAY";
-		} else if (date.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
-			return "SATURDAY";
-		}
-		return null;
 	}
 
 }

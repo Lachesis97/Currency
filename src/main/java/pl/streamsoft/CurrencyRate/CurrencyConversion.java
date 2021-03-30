@@ -16,22 +16,20 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import pl.streamsoft.DbServices.CurrencyRepository;
+import pl.streamsoft.Get.GetCurrencyCacheMap;
 import pl.streamsoft.Get.GetCurrencyJsonNBP;
-import pl.streamsoft.services.CacheMap;
+import pl.streamsoft.services.CacheService;
 import pl.streamsoft.services.ConvertService;
 import pl.streamsoft.services.Currency;
+import pl.streamsoft.services.DataProviderService;
 import pl.streamsoft.services.FutureDateToTodaysDate;
 import pl.streamsoft.services.NbpJsonConverter;
-import pl.streamsoft.services.RateService;
 import pl.streamsoft.services.ReturnValidateDate;
 
 public class CurrencyConversion {
-	private static int MAX_ENTRIES = 5;
-	private RateService rateService;
-	private ConvertService convertService;
-	Currency existCurrency = new Currency();
-	Currency newCurrency = new Currency();
-	Map<String, Currency> cache = new LinkedHashMap<String, Currency>(MAX_ENTRIES) {
+	private int MAX_ENTRIES = 20;
+	Map<String, Currency> cache = new LinkedHashMap<String, Currency>() {
 
 		protected boolean removeEldestEntry(Map.Entry<String, Currency> eldest) {
 
@@ -39,21 +37,34 @@ public class CurrencyConversion {
 		}
 	};
 
+	private ConvertService convertService = new NbpJsonConverter();
+	private DataProviderService rateService = new GetCurrencyJsonNBP(convertService);
+	private CacheService cacheService = new GetCurrencyCacheMap(cache, MAX_ENTRIES);
+	Currency currency = new Currency();
+
 	public CurrencyConversion() {
-		rateService = new GetCurrencyJsonNBP();
-		convertService = new NbpJsonConverter();
 	}
 
 	public CurrencyConversion(int MAX_ENTRIES) {
-		CurrencyConversion.MAX_ENTRIES = MAX_ENTRIES;
-		rateService = new GetCurrencyJsonNBP();
-		convertService = new NbpJsonConverter();
+		this.MAX_ENTRIES = MAX_ENTRIES;
 	}
 
-	public CurrencyConversion(RateService rateService, ConvertService convertService, int MAX_ENTRIES) {
+	public CurrencyConversion(CacheService cacheService, int MAX_ENTRIES) {
+		this.cacheService = cacheService;
+		this.MAX_ENTRIES = MAX_ENTRIES;
+	}
+
+	public CurrencyConversion(DataProviderService rateService, ConvertService convertService) {
 		this.rateService = rateService;
 		this.convertService = convertService;
-		CurrencyConversion.MAX_ENTRIES = MAX_ENTRIES;
+	}
+
+	public CurrencyConversion(DataProviderService rateService, ConvertService convertService, CacheService cacheService,
+			int MAX_ENTRIES) {
+		this.rateService = rateService;
+		this.convertService = convertService;
+		this.cacheService = cacheService;
+		this.MAX_ENTRIES = MAX_ENTRIES;
 
 	}
 
@@ -63,28 +74,28 @@ public class CurrencyConversion {
 		date = ReturnValidateDate.dataValidation(code, date, rateService);
 
 		String key = code + date.toString();
-		CacheMap cacheMap = new CacheMap(key, cache);
-		existCurrency = cacheMap.cacheCurrency();
+		currency = cacheService.checkAndGetIfExist(key);
 
-		if (existCurrency == null) {
-			String result = rateService.getCurrency(code.toUpperCase(), date);
-			newCurrency = convertService.convertDataToObj(result);
+		if (currency == null) {
+			CurrencyRepository currencyRepository = new CurrencyRepository();
+			currency = currencyRepository.getCurrency(code, date);
+			cacheService.putToCache(currency, key);
 
-			cache.put(key, newCurrency);
-
-			return amount.multiply(newCurrency.getRate());
 		}
 
-		return amount.multiply(existCurrency.getRate());
+		if (currency == null) {
+			currency = rateService.getCurrency(code.toUpperCase(), date);
 
-	}
+			CurrencyRepository currencyRepository = new CurrencyRepository();
+			currencyRepository.addCurrency(currency);
 
-	public Currency getExistCurrency() {
-		return existCurrency;
-	}
+			cacheService.putToCache(currency, key);
 
-	public Currency getNewCurrency() {
-		return newCurrency;
+			return currency.currencyToPln(amount);
+		}
+
+		return currency.currencyToPln(amount);
+
 	}
 
 	public Map<String, Currency> getCache() {

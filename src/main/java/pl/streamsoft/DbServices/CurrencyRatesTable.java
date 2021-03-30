@@ -10,17 +10,23 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NamedQueries;
+import org.hibernate.annotations.NamedQuery;
+
 @Entity
 @Table(name = "CurrencyRatesTable")
+@NamedQueries({
+		@NamedQuery(name = "CurrencyCodeTable.GetRate", query = "SELECT r FROM CurrencyRatesTable r WHERE r.date = :date AND r.cid = :cid") })
+
 public class CurrencyRatesTable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ID")
+	@Column(name = "id", unique = true)
 	private Long id;
 
-	@Column(name = "CodeID", nullable = false)
-	private long codeID;
+	@Column(name = "cid", nullable = false)
+	private long cid;
 
 	@Column(name = "Date", nullable = false)
 	private LocalDate date;
@@ -41,11 +47,11 @@ public class CurrencyRatesTable {
 	}
 
 	public long getCodeID() {
-		return codeID;
+		return cid;
 	}
 
 	public void setCodeID(long codeID) {
-		this.codeID = codeID;
+		this.cid = codeID;
 	}
 
 	public LocalDate getDate() {

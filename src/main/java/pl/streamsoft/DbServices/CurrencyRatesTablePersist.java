@@ -12,9 +12,7 @@ public class CurrencyRatesTablePersist {
 
 	private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Currency");
 
-	public void persist(LocalDate date, BigDecimal rate) {
-
-		long codeid = 0;
+	public void persist(LocalDate date, BigDecimal rate, long codeid) {
 
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		EntityTransaction entityTransaction;

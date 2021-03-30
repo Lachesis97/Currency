@@ -10,7 +10,7 @@ import org.junit.Test;
 import pl.streamsoft.Get.GetCurrencyJsonNBP;
 import pl.streamsoft.exceptions.DateValidationException;
 import pl.streamsoft.services.FutureDateToTodaysDate;
-import pl.streamsoft.services.RateService;
+import pl.streamsoft.services.DataProviderService;
 import pl.streamsoft.services.ReturnValidateDate;
 
 public class DateAlgorithmTest {
@@ -37,7 +37,7 @@ public class DateAlgorithmTest {
 		LocalDate dateWithoutRate = LocalDate.of(2021, 3, 21);
 		LocalDate shouldReturn = LocalDate.of(2021, 3, 19);
 		String code = "eur";
-		RateService strategy = new GetCurrencyJsonNBP();
+		DataProviderService strategy = new GetCurrencyJsonNBP();
 
 		// when
 		LocalDate checkedDate = ReturnValidateDate.dataValidation(code, dateWithoutRate, strategy);
@@ -54,7 +54,7 @@ public class DateAlgorithmTest {
 		LocalDate dateWithoutRate = LocalDate.of(2021, 1, 6);
 		LocalDate shouldReturn = LocalDate.of(2021, 1, 5);
 		String code = "eur";
-		RateService strategy = new GetCurrencyJsonNBP();
+		DataProviderService strategy = new GetCurrencyJsonNBP();
 
 		// when
 		LocalDate checkedDate = ReturnValidateDate.dataValidation(code, dateWithoutRate, strategy);
@@ -71,7 +71,7 @@ public class DateAlgorithmTest {
 		LocalDate dateWithoutRate = LocalDate.of(2023, 3, 13);
 		String code = "eur";
 		String shouldReturnMsg = "B³êdne argumenty wyszukiwania lub nie ma takiego kursu.";
-		RateService strategy = new GetCurrencyJsonNBP();
+		DataProviderService strategy = new GetCurrencyJsonNBP();
 
 		// when
 		Throwable thrown = catchThrowable(() -> ReturnValidateDate.dataValidation(code, dateWithoutRate, strategy));

@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import pl.streamsoft.Get.GetCurrencyJsonNBP;
 import pl.streamsoft.exceptions.ExecuteHttpRequestException;
+import pl.streamsoft.services.Currency;
 
 public class GetCurrencyJsonNbpTest {
 
@@ -20,10 +21,10 @@ public class GetCurrencyJsonNbpTest {
 		String badUrl = "http://api.nbp.pl/api/exchangerates/rates/";
 
 		// when
-		String result1 = new GetCurrencyJsonNBP().getCurrency("EUR", LocalDate.of(2021, 3, 22));
-		String result2 = new GetCurrencyJsonNBP(url).getCurrency("EUR", LocalDate.of(2021, 3, 22));
-		String result3 = new GetCurrencyJsonNBP().getCurrency("EUR", LocalDate.of(2021, 3, 21));
-		String result4 = new GetCurrencyJsonNBP(badUrl).getCurrency("EUR", LocalDate.of(2021, 3, 22));
+		Currency result1 = new GetCurrencyJsonNBP().getCurrency("EUR", LocalDate.of(2021, 3, 22));
+		Currency result2 = new GetCurrencyJsonNBP(url).getCurrency("EUR", LocalDate.of(2021, 3, 22));
+		Currency result3 = new GetCurrencyJsonNBP().getCurrency("EUR", LocalDate.of(2021, 3, 21));
+		Currency result4 = new GetCurrencyJsonNBP(badUrl).getCurrency("EUR", LocalDate.of(2021, 3, 22));
 
 		// then
 		Assertions.assertThat(result1 != null && result2 != null && result3 == null && result4 == null);
