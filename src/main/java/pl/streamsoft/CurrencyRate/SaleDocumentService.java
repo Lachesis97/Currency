@@ -7,6 +7,7 @@
 package pl.streamsoft.CurrencyRate;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import pl.streamsoft.DbServices.CurrencyRepository;
@@ -18,12 +19,13 @@ public class SaleDocumentService {
 	public void insert() {
 
 		String code = "eur";
-		LocalDate date = LocalDate.of(2021, 3, 30);
+		LocalDate date = LocalDate.of(2021, 4, 5);
 		BigDecimal foreignCurrency = new BigDecimal("123.00");
 
-		CurrencyConversion conversion = new CurrencyConversion(2, new CurrencyRepository(new GetCurrencyJsonNBP()));
+		CurrencyConversion conversion = new CurrencyConversion(new CurrencyRepository(new GetCurrencyJsonNBP()));
 		Currency currency = conversion.conversion(code, date);
 		BigDecimal result = currency.currencyToPln(foreignCurrency);
+		System.out.println(result.setScale(2, RoundingMode.HALF_UP));
 
 		conversion.conversion("inr", LocalDate.of(2021, 3, 22));
 		conversion.conversion("inr", LocalDate.of(2021, 3, 23));
@@ -35,7 +37,6 @@ public class SaleDocumentService {
 		conversion.conversion("gbp", LocalDate.of(2021, 3, 18));
 		conversion.conversion("usd", LocalDate.of(2021, 3, 17));
 
-		System.out.println(conversion.getCache());
 	}
 
 }

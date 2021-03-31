@@ -45,6 +45,12 @@ public class GetCurrencyJsonNBP implements DataProviderService {
 
 	}
 
+	public GetCurrencyJsonNBP(ConvertService convertService, DataProviderService dataProviderService) {
+		this.convertService = convertService;
+		this.nextStrategy = dataProviderService;
+
+	}
+
 	public GetCurrencyJsonNBP(String url, ConvertService convertService, DataProviderService dataProviderService) {
 		this.url = url;
 		this.convertService = convertService;
@@ -60,8 +66,6 @@ public class GetCurrencyJsonNBP implements DataProviderService {
 			HttpGet request = new HttpGet(url + code + "/" + date + "/?format=json");
 
 			CloseableHttpResponse response = httpClient.execute(request);
-
-			System.out.println("NBP");
 
 			HttpEntity entity = response.getEntity();
 
@@ -104,8 +108,6 @@ public class GetCurrencyJsonNBP implements DataProviderService {
 			HttpGet request = new HttpGet(url + code + "/" + date + "/?format=json");
 
 			CloseableHttpResponse response = httpClient.execute(request);
-
-			System.out.println("NBP");
 
 			HttpEntity entity = response.getEntity();
 

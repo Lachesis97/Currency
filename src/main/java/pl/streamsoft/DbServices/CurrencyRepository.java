@@ -1,5 +1,6 @@
 package pl.streamsoft.DbServices;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import javax.persistence.EntityManager;
@@ -28,12 +29,12 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 	@Override
 	public void addCurrency(Currency currency) {
 
-		if (codeExists(currency.getCode())) {
+		if (!codeExists(currency.getCode())) {
 			CurrencyCodeTablePersist codeTablePersist = new CurrencyCodeTablePersist();
 			codeTablePersist.persist(currency.getName(), currency.getCode());
 		}
 
-		if (rateExists(currency.getCode(), currency.getDate())) {
+		if (!rateExists(currency.getCode(), currency.getDate())) {
 			CurrencyRatesTablePersist ratesTablePersist = new CurrencyRatesTablePersist();
 			ratesTablePersist.persist(currency.getDate(), currency.getRate(), getCurrencyId(currency.getCode()));
 		}
@@ -60,8 +61,49 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 	}
 
 	@Override
-	public void updateSingleRate(String code, LocalDate date) {
+	public void updateSingleRate(String code, LocalDate date, LocalDate newDate, BigDecimal newRate) {
 
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		EntityTransaction entityTransaction;
+
+		entityTransaction = entityManager.getTransaction();
+		entityTransaction.begin();
+		Query query = entityManager.createQuery(
+				"UPDATE CurrencyRatesTable SET date = :newd, rate = :newr WHERE date = :date AND cid = :cid");
+		query.setParameter("newd", newDate);
+		query.setParameter("newr", newRate);
+		query.setParameter("date", date);
+		query.setParameter("cid", getCurrencyId(code.toUpperCase()));
+		try {
+			query.executeUpdate();
+			entityTransaction.commit();
+
+		} catch (IllegalStateException e) {
+			throw new DeleteFromDataBaseException("èle sformu≥owane zapytanie", e);
+		}
+	}
+
+	@Override
+	public void updateSingleCode(String code, String name, String newCode, String newName) {
+
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		EntityTransaction entityTransaction;
+
+		entityTransaction = entityManager.getTransaction();
+		entityTransaction.begin();
+		Query query = entityManager.createQuery(
+				"UPDATE CurrencyCodeTable SET code = :newc, name = :newn WHERE code = :code AND name = :name");
+		query.setParameter("newc", newCode);
+		query.setParameter("newn", newName);
+		query.setParameter("code", code);
+		query.setParameter("name", name);
+		try {
+			query.executeUpdate();
+			entityTransaction.commit();
+
+		} catch (IllegalStateException e) {
+			throw new DeleteFromDataBaseException("èle sformu≥owane zapytanie", e);
+		}
 	}
 
 	@Override
@@ -96,12 +138,12 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 			CurrencyRatesTable currencyRatesTable = (CurrencyRatesTable) query.getSingleResult();
 
 			if (currencyRatesTable != null) {
-				return false;
-			} else {
 				return true;
+			} else {
+				return false;
 			}
 		} catch (NoResultException e) {
-			return true;
+			return false;
 		} finally {
 			entityManager.close();
 		}
@@ -118,12 +160,12 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 			currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
 
 			if (currencyCodeTable != null) {
-				return false;
-			} else {
 				return true;
+			} else {
+				return false;
 			}
 		} catch (NoResultException e) {
-			return true;
+			return false;
 		} finally {
 			entityManager.close();
 		}

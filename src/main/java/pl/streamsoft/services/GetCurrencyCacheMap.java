@@ -1,36 +1,34 @@
 package pl.streamsoft.services;
 
-import java.util.Map;
-
 public class GetCurrencyCacheMap implements CacheService {
 
-	Map<String, Currency> cache = new ExtendedCacheMap<String, Currency>();
+	private LruCache<String, Currency> cache;
 
 	public GetCurrencyCacheMap() {
 	}
 
-	public GetCurrencyCacheMap(Map<String, Currency> cache) {
+	public GetCurrencyCacheMap(LruCache cache) {
 		this.cache = cache;
 	}
 
 	public Currency checkAndGetIfExist(String key) {
 
 		Currency currency;
-		if (cache.containsKey(key)) {
+		if (cache.get(key) != null) {
 			currency = cache.get(key);
-			return currency;
 
+			return currency;
 		}
 		return null;
 	}
 
-	public void putToCache(Currency currency, String key, int MAX_ENTRIES) {
+	public void putToCache(Currency currency, String key) {
 
 		cache.put(key, currency);
 
 	}
 
-	public Map<String, Currency> getCache() {
+	public LruCache getCache() {
 		return cache;
 	}
 

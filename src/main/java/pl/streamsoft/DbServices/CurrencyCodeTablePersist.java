@@ -9,7 +9,7 @@ public class CurrencyCodeTablePersist {
 
 	private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Currency");
 
-	public void persist(String code, String name) {
+	public static void persist(String code, String name) {
 
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		EntityTransaction entityTransaction;
