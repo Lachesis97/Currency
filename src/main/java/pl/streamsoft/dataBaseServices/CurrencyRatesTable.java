@@ -1,4 +1,4 @@
-package pl.streamsoft.DbServices;
+package pl.streamsoft.dataBaseServices;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import pl.streamsoft.Get.GetCurrencyJsonNBP;
 import pl.streamsoft.exceptions.ExecuteHttpRequestException;
+import pl.streamsoft.getOrSaveData.GetCurrencyJsonNBP;
 import pl.streamsoft.services.Currency;
 
 public class GetCurrencyJsonNbpTest {

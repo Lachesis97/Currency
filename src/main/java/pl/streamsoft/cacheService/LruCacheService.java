@@ -1,15 +1,18 @@
-package pl.streamsoft.services;
+package pl.streamsoft.cacheService;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class LruCache<String, Currency> {
+public class LruCacheService<String, Currency> {
 	private int size;
 	private ConcurrentLinkedQueue<String> linkedQueue;
 	private ConcurrentHashMap<String, Currency> hashMap;
 
-	public LruCache(int size) {
+	public LruCacheService(int size) {
 		this.size = size;
+		if (size > 1024) {
+			size = 1024;
+		}
 		this.linkedQueue = new ConcurrentLinkedQueue<String>();
 		this.hashMap = new ConcurrentHashMap<String, Currency>(size);
 	}
@@ -37,6 +40,11 @@ public class LruCache<String, Currency> {
 		}
 		linkedQueue.add(key);
 		hashMap.put(key, value);
+	}
+
+	public synchronized void clear() {
+		this.linkedQueue = new ConcurrentLinkedQueue<String>();
+		this.hashMap = new ConcurrentHashMap<String, Currency>(size);
 	}
 
 }

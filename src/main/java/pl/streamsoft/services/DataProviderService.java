@@ -8,4 +8,6 @@ public interface DataProviderService {
 
 	public Currency getCurrency(String code, LocalDate date);
 
+	public DataProviderService getNextStrategy();
+
 }

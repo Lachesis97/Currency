@@ -2,7 +2,6 @@ package pl.streamsoft.services;
 
 import java.time.LocalDate;
 
-import pl.streamsoft.Get.GetCurrencyJsonNBP;
 import pl.streamsoft.exceptions.DateValidationException;
 
 public class ReturnValidateDate {
@@ -22,10 +21,12 @@ public class ReturnValidateDate {
 
 			i++;
 			if (i == 10) {
-				if (strategy != new GetCurrencyJsonNBP()) {
-					return ReturnValidateDate.dataValidation(code, date, new GetCurrencyJsonNBP());
+				if (strategy.getNextStrategy() != null) {
+					return ReturnValidateDate.dataValidation(code, date, strategy.getNextStrategy());
+				} else {
+					throw new DateValidationException("B³êdne argumenty wyszukiwania lub nie ma takiego kursu.");
 				}
-				throw new DateValidationException("B³êdne argumenty wyszukiwania lub nie ma takiego kursu.");
+
 			}
 		}
 

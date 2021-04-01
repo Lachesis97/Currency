@@ -8,7 +8,7 @@ import org.junit.Test;
 import pl.streamsoft.CurrencyRate.CurrencyConversion;
 import pl.streamsoft.services.Currency;
 
-public class CacheMapTest {
+public class CacheTest {
 
 	@Test
 	public void should_add_to_cache() {
@@ -51,6 +51,23 @@ public class CacheMapTest {
 		Assertions.assertThat(conversion.getCache().get(key1)).isNull();
 		Assertions.assertThat(conversion.getCache().get(key2)).isEqualTo(currency2);
 		Assertions.assertThat(conversion.getCache().get(key3)).isEqualTo(currency3);
+
+	}
+
+	@Test
+	public void should_clear_cache() {
+
+		// given
+		CurrencyConversion conversion = new CurrencyConversion();
+		conversion.conversion("eur", LocalDate.of(2021, 3, 22));
+		Assertions.assertThat(conversion.getCache().get("eur2021-03-22")).isNotNull();
+
+		// when
+
+		conversion.clearCache();
+
+		// then
+		Assertions.assertThat(conversion.getCache().get("eur2021-03-22")).isNull();
 
 	}
 

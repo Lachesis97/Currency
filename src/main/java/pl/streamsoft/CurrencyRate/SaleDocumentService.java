@@ -10,8 +10,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
-import pl.streamsoft.DbServices.CurrencyRepository;
-import pl.streamsoft.Get.GetCurrencyJsonNBP;
 import pl.streamsoft.services.Currency;
 
 public class SaleDocumentService {
@@ -19,10 +17,10 @@ public class SaleDocumentService {
 	public void insert() {
 
 		String code = "eur";
-		LocalDate date = LocalDate.of(2021, 4, 5);
+		LocalDate date = LocalDate.of(2021, 4, 15);
 		BigDecimal foreignCurrency = new BigDecimal("123.00");
 
-		CurrencyConversion conversion = new CurrencyConversion(new CurrencyRepository(new GetCurrencyJsonNBP()));
+		CurrencyConversion conversion = new CurrencyConversion();
 		Currency currency = conversion.conversion(code, date);
 		BigDecimal result = currency.currencyToPln(foreignCurrency);
 		System.out.println(result.setScale(2, RoundingMode.HALF_UP));

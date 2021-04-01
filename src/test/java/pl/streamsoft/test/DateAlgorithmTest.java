@@ -7,10 +7,10 @@ import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import pl.streamsoft.Get.GetCurrencyJsonNBP;
 import pl.streamsoft.exceptions.DateValidationException;
-import pl.streamsoft.services.FutureDateToTodaysDate;
+import pl.streamsoft.getOrSaveData.GetCurrencyJsonNBP;
 import pl.streamsoft.services.DataProviderService;
+import pl.streamsoft.services.FutureDateToTodaysDate;
 import pl.streamsoft.services.ReturnValidateDate;
 
 public class DateAlgorithmTest {

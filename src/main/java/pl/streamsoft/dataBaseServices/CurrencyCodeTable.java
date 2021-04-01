@@ -1,4 +1,4 @@
-package pl.streamsoft.DbServices;
+package pl.streamsoft.dataBaseServices;
 
 import java.util.Set;
 
@@ -35,7 +35,7 @@ public class CurrencyCodeTable {
 	@Column(name = "Code", nullable = false, unique = true)
 	private String code;
 
-	@OneToMany(fetch = FetchType.EAGER, targetEntity = CurrencyRatesTable.class, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, targetEntity = CurrencyRatesTable.class, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "cid", referencedColumnName = "id")
 	private Set<CurrencyRatesTable> rate;
 

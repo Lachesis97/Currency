@@ -1,15 +1,18 @@
-package pl.streamsoft.DbServices;
+package pl.streamsoft.dataBaseServices;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-public class CurrencyCodeTablePersist {
+public class CurrencyRatesTablePersist {
 
 	private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Currency");
 
-	public static void persist(String code, String name) {
+	public void persist(LocalDate date, BigDecimal rate, long codeid) {
 
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		EntityTransaction entityTransaction;
@@ -17,13 +20,13 @@ public class CurrencyCodeTablePersist {
 		entityTransaction = entityManager.getTransaction();
 		entityTransaction.begin();
 
-		CurrencyCodeTable currencyCodeTable = new CurrencyCodeTable();
-		currencyCodeTable.setName(code.toUpperCase());
-		currencyCodeTable.setCode(name.toUpperCase());
+		CurrencyRatesTable currencyRatesTable = new CurrencyRatesTable();
+		currencyRatesTable.setDate(date);
+		currencyRatesTable.setRate(rate);
+		currencyRatesTable.setCodeID(codeid);
 
-		entityManager.persist(currencyCodeTable);
+		entityManager.persist(currencyRatesTable);
 		entityTransaction.commit();
-
 	}
 
 }

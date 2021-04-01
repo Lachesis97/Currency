@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import pl.streamsoft.DbServices.CurrencyRepository;
+import pl.streamsoft.getOrSaveData.CurrencyRepository;
 import pl.streamsoft.services.Currency;
 
 public class DataBaseTest {
@@ -61,6 +61,25 @@ public class DataBaseTest {
 		currencyRepository.deleteSingleRate("KOD", LocalDate.of(2021, 5, 23));
 
 		// then
+		Assertions.assertThat(currencyRepository.rateExists("KOD", LocalDate.of(2021, 5, 23))).isEqualTo(false);
+
+	}
+
+	@Test
+	public void should_add_and_then_delete_currency_obj() {
+
+		// given
+		Currency currency = new Currency("NAZWA", "KOD", LocalDate.of(2021, 5, 23), new BigDecimal("1"));
+		CurrencyRepository currencyRepository = new CurrencyRepository();
+		currencyRepository.addCurrency(currency);
+		Assertions.assertThat(currencyRepository.codeExists("KOD")).isEqualTo(true);
+		Assertions.assertThat(currencyRepository.rateExists("KOD", LocalDate.of(2021, 5, 23))).isEqualTo(true);
+
+		// when
+		currencyRepository.deleteCurrency("KOD");
+
+		// then
+		Assertions.assertThat(currencyRepository.codeExists("KOD")).isEqualTo(false);
 		Assertions.assertThat(currencyRepository.rateExists("KOD", LocalDate.of(2021, 5, 23))).isEqualTo(false);
 
 	}

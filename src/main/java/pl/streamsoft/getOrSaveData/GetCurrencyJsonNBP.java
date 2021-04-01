@@ -1,4 +1,4 @@
-package pl.streamsoft.Get;
+package pl.streamsoft.getOrSaveData;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
@@ -33,6 +33,10 @@ public class GetCurrencyJsonNBP implements DataProviderService {
 	public GetCurrencyJsonNBP(ConvertService convertService) {
 		this.convertService = convertService;
 
+	}
+
+	public DataProviderService getNextStrategy() {
+		return nextStrategy;
 	}
 
 	public GetCurrencyJsonNBP(String url) {

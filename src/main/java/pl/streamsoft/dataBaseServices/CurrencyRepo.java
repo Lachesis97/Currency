@@ -1,4 +1,4 @@
-package pl.streamsoft.DbServices;
+package pl.streamsoft.dataBaseServices;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,7 +9,7 @@ public interface CurrencyRepo {
 
 	public void addCurrency(Currency currency);
 
-	public void deleteSingleRate(String code, LocalDate date);
+	public void deleteCurrency(String code);
 
 	public void updateSingleRate(String code, LocalDate date, LocalDate newDate, BigDecimal newRate);
 

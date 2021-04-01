@@ -1,4 +1,4 @@
-package pl.streamsoft.DbServices;
+package pl.streamsoft.getOrSaveData;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -8,9 +8,20 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
+import org.hibernate.NonUniqueResultException;
+import org.hibernate.QueryTimeoutException;
+
+import pl.streamsoft.dataBaseServices.CurrencyCodeTable;
+import pl.streamsoft.dataBaseServices.CurrencyCodeTablePersist;
+import pl.streamsoft.dataBaseServices.CurrencyRatesTable;
+import pl.streamsoft.dataBaseServices.CurrencyRatesTablePersist;
+import pl.streamsoft.dataBaseServices.CurrencyRepo;
 import pl.streamsoft.exceptions.DeleteFromDataBaseException;
+import pl.streamsoft.exceptions.GetFromDataBaseException;
+import pl.streamsoft.exceptions.UpdateDataBaseException;
 import pl.streamsoft.services.Currency;
 import pl.streamsoft.services.DataProviderService;
 
@@ -20,6 +31,10 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 
 	public CurrencyRepository() {
 
+	}
+
+	public DataProviderService getNextStrategy() {
+		return nextStrategy;
 	}
 
 	public CurrencyRepository(DataProviderService dataProviderService) {
@@ -40,7 +55,6 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 		}
 	}
 
-	@Override
 	public void deleteSingleRate(String code, LocalDate date) {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		EntityTransaction entityTransaction;
@@ -54,10 +68,44 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 			query.executeUpdate();
 			entityTransaction.commit();
 
+		} catch (IllegalArgumentException e) {
+			throw new DeleteFromDataBaseException("èle sformu≥owane zapytanie.", e);
 		} catch (IllegalStateException e) {
-			throw new DeleteFromDataBaseException("èle sformu≥owane zapytanie", e);
+			throw new DeleteFromDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (QueryTimeoutException e) {
+			throw new DeleteFromDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (PersistenceException e) {
+			throw new DeleteFromDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
 		}
 
+	}
+
+	@Override
+	public void deleteCurrency(String code) {
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		EntityTransaction entityTransaction;
+
+		entityTransaction = entityManager.getTransaction();
+		entityTransaction.begin();
+		Query query1 = entityManager.createQuery("DELETE CurrencyRatesTable r WHERE r.cid = :cid");
+		query1.setParameter("cid", getCurrencyId(code.toUpperCase()));
+		Query query2 = entityManager.createQuery("DELETE CurrencyCodeTable WHERE code = :code");
+		query2.setParameter("code", code);
+
+		try {
+			query1.executeUpdate();
+			query2.executeUpdate();
+			entityTransaction.commit();
+
+		} catch (IllegalArgumentException e) {
+			throw new DeleteFromDataBaseException("èle sformu≥owane zapytanie.", e);
+		} catch (IllegalStateException e) {
+			throw new DeleteFromDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (QueryTimeoutException e) {
+			throw new DeleteFromDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (PersistenceException e) {
+			throw new DeleteFromDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		}
 	}
 
 	@Override
@@ -78,8 +126,14 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 			query.executeUpdate();
 			entityTransaction.commit();
 
+		} catch (IllegalArgumentException e) {
+			throw new UpdateDataBaseException("èle sformu≥owane zapytanie.", e);
 		} catch (IllegalStateException e) {
-			throw new DeleteFromDataBaseException("èle sformu≥owane zapytanie", e);
+			throw new UpdateDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (QueryTimeoutException e) {
+			throw new UpdateDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (PersistenceException e) {
+			throw new UpdateDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
 		}
 	}
 
@@ -101,8 +155,14 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 			query.executeUpdate();
 			entityTransaction.commit();
 
+		} catch (IllegalArgumentException e) {
+			throw new UpdateDataBaseException("èle sformu≥owane zapytanie.", e);
 		} catch (IllegalStateException e) {
-			throw new DeleteFromDataBaseException("èle sformu≥owane zapytanie", e);
+			throw new UpdateDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (QueryTimeoutException e) {
+			throw new UpdateDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (PersistenceException e) {
+			throw new UpdateDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
 		}
 	}
 
@@ -117,12 +177,21 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 		try {
 			currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
 			return currencyCodeTable.getId();
-		} catch (Exception e) {
-			// TODO: handle exception
+		} catch (NoResultException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+		} catch (NonUniqueResultException e) {
+			throw new GetFromDataBaseException("Powtarzajπcy siÍ rekord w bazie danych.", e);
+		} catch (IllegalArgumentException e) {
+			throw new GetFromDataBaseException("èle sformu≥owane zapytanie.", e);
+		} catch (IllegalStateException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+		} catch (QueryTimeoutException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+		} catch (PersistenceException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
 		} finally {
 			entityManager.close();
 		}
-		return 0;
 
 	}
 
@@ -144,6 +213,16 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 			}
 		} catch (NoResultException e) {
 			return false;
+		} catch (NonUniqueResultException e) {
+			throw new GetFromDataBaseException("Powtarzajπcy siÍ rekord w bazie danych.", e);
+		} catch (IllegalArgumentException e) {
+			throw new GetFromDataBaseException("èle sformu≥owane zapytanie.", e);
+		} catch (IllegalStateException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ sprawdziÊ czy rekord istnieje.", e);
+		} catch (QueryTimeoutException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ sprawdziÊ czy rekord istnieje.", e);
+		} catch (PersistenceException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ sprawdziÊ czy rekord istnieje.", e);
 		} finally {
 			entityManager.close();
 		}
@@ -166,6 +245,16 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 			}
 		} catch (NoResultException e) {
 			return false;
+		} catch (NonUniqueResultException e) {
+			throw new GetFromDataBaseException("Powtarzajπcy siÍ rekord w bazie danych.", e);
+		} catch (IllegalArgumentException e) {
+			throw new GetFromDataBaseException("èle sformu≥owane zapytanie.", e);
+		} catch (IllegalStateException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ sprawdziÊ czy rekord istnieje.", e);
+		} catch (QueryTimeoutException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ sprawdziÊ czy rekord istnieje.", e);
+		} catch (PersistenceException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ sprawdziÊ czy rekord istnieje.", e);
 		} finally {
 			entityManager.close();
 		}
@@ -203,6 +292,16 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 				return nextStrategy.getCurrency(code, date);
 			}
 			return null;
+		} catch (NonUniqueResultException e) {
+			throw new GetFromDataBaseException("Powtarzajπcy siÍ rekord w bazie danych.", e);
+		} catch (IllegalArgumentException e) {
+			throw new GetFromDataBaseException("èle sformu≥owane zapytanie.", e);
+		} catch (IllegalStateException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
+		} catch (QueryTimeoutException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
+		} catch (PersistenceException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
 		} finally {
 			entityManager.close();
 		}
@@ -234,6 +333,16 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 
 		} catch (NoResultException e) {
 			return null;
+		} catch (NonUniqueResultException e) {
+			throw new GetFromDataBaseException("Powtarzajπcy siÍ rekord w bazie danych.", e);
+		} catch (IllegalArgumentException e) {
+			throw new GetFromDataBaseException("èle sformu≥owane zapytanie.", e);
+		} catch (IllegalStateException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
+		} catch (QueryTimeoutException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
+		} catch (PersistenceException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
 		} finally {
 			entityManager.close();
 		}

@@ -13,85 +13,86 @@ package pl.streamsoft.CurrencyRate;
 
 import java.time.LocalDate;
 
-import pl.streamsoft.DbServices.CurrencyRepository;
-import pl.streamsoft.Get.GetCurrencyJsonNBP;
-import pl.streamsoft.services.CacheService;
+import pl.streamsoft.cacheService.CacheService;
+import pl.streamsoft.cacheService.LruCacheService;
+import pl.streamsoft.getOrSaveData.CurrencyRepository;
+import pl.streamsoft.getOrSaveData.GetCurrencyJsonNBP;
+import pl.streamsoft.getOrSaveData.LruCache;
 import pl.streamsoft.services.ConvertService;
 import pl.streamsoft.services.Currency;
 import pl.streamsoft.services.DataProviderService;
-import pl.streamsoft.services.GetCurrencyCacheMap;
-import pl.streamsoft.services.LruCache;
+import pl.streamsoft.services.FutureDateToTodaysDate;
 import pl.streamsoft.services.NbpJsonConverter;
 import pl.streamsoft.services.ReturnValidateDate;
 
 public class CurrencyConversion {
 
 	private int MAX_ENTRIES = 20;
-	LruCache<String, Currency> cache;
+	LruCacheService<String, Currency> cache;
 	private ConvertService convertService = new NbpJsonConverter();
-	private DataProviderService rateService = new GetCurrencyJsonNBP(convertService);
+	private DataProviderService dataProviderService = new CurrencyRepository(new GetCurrencyJsonNBP(convertService));
 	private CacheService cacheService;
 	Currency currency = new Currency();
 
 	public CurrencyConversion() {
-		cache = new LruCache<String, Currency>(MAX_ENTRIES);
-		cacheService = new GetCurrencyCacheMap(cache);
+		cache = new LruCacheService<String, Currency>(MAX_ENTRIES);
+		cacheService = new LruCache(cache);
 	}
 
 	public CurrencyConversion(int MAX_ENTRIES) {
 		this.MAX_ENTRIES = MAX_ENTRIES;
-		cache = new LruCache<String, Currency>(MAX_ENTRIES);
-		cacheService = new GetCurrencyCacheMap(cache);
+		cache = new LruCacheService<String, Currency>(MAX_ENTRIES);
+		cacheService = new LruCache(cache);
 	}
 
-	public CurrencyConversion(DataProviderService rateService) {
-		this.rateService = rateService;
-		cache = new LruCache<String, Currency>(MAX_ENTRIES);
-		cacheService = new GetCurrencyCacheMap(cache);
+	public CurrencyConversion(DataProviderService dataProviderService) {
+		this.dataProviderService = dataProviderService;
+		cache = new LruCacheService<String, Currency>(MAX_ENTRIES);
+		cacheService = new LruCache(cache);
 	}
 
-	public CurrencyConversion(DataProviderService rateService, int MAX_ENTRIES) {
+	public CurrencyConversion(DataProviderService dataProviderService, int MAX_ENTRIES) {
 		this.MAX_ENTRIES = MAX_ENTRIES;
-		this.rateService = rateService;
-		cache = new LruCache<String, Currency>(MAX_ENTRIES);
-		cacheService = new GetCurrencyCacheMap(cache);
+		this.dataProviderService = dataProviderService;
+		cache = new LruCacheService<String, Currency>(MAX_ENTRIES);
+		cacheService = new LruCache(cache);
 	}
 
 	public CurrencyConversion(int MAX_ENTRIES, CacheService cacheService) {
 		this.cacheService = cacheService;
 		this.MAX_ENTRIES = MAX_ENTRIES;
-		cache = new LruCache<String, Currency>(MAX_ENTRIES);
-		cacheService = new GetCurrencyCacheMap(cache);
+		cache = new LruCacheService<String, Currency>(MAX_ENTRIES);
+		cacheService = new LruCache(cache);
 	}
 
-	public CurrencyConversion(DataProviderService rateService, ConvertService convertService) {
+	public CurrencyConversion(DataProviderService dataProviderService, ConvertService convertService) {
 		this.convertService = convertService;
-		this.rateService = rateService;
+		this.dataProviderService = dataProviderService;
 
 	}
 
-	public CurrencyConversion(DataProviderService rateService, ConvertService convertService, CacheService cacheService,
-			int MAX_ENTRIES) {
-		this.rateService = rateService;
+	public CurrencyConversion(DataProviderService dataProviderService, ConvertService convertService,
+			CacheService cacheService, int MAX_ENTRIES) {
+		this.dataProviderService = dataProviderService;
 		this.convertService = convertService;
 		this.cacheService = cacheService;
 		this.MAX_ENTRIES = MAX_ENTRIES;
-		cache = new LruCache<String, Currency>(MAX_ENTRIES);
-		cacheService = new GetCurrencyCacheMap(cache);
+		cache = new LruCacheService<String, Currency>(MAX_ENTRIES);
+		cacheService = new LruCache(cache);
 
 	}
 
 	public Currency conversion(String code, LocalDate date) {
 
-		// date = FutureDateToTodaysDate.dataValidation(date);
-		date = ReturnValidateDate.dataValidation(code, date, rateService);
+		date = FutureDateToTodaysDate.dataValidation(date);
+		date = ReturnValidateDate.dataValidation(code, date, dataProviderService);
 
 		String key = code + date.toString();
 
 		currency = cacheService.checkAndGetIfExist(key);
 
 		if (currency == null) {
-			currency = rateService.getCurrency(code.toUpperCase(), date);
+			currency = dataProviderService.getCurrency(code.toUpperCase(), date);
 
 			cacheService.putToCache(currency, key);
 			CurrencyRepository currencyRepository = new CurrencyRepository();
@@ -103,12 +104,12 @@ public class CurrencyConversion {
 
 	}
 
-	public LruCache getCache() {
+	public LruCacheService<String, Currency> getCache() {
 		return cache;
 	}
 
-	public void cacheClear() {
-		cache = new LruCache<String, Currency>(5);
+	public void clearCache() {
+		cacheService.clearCache();
 	}
 
 }
