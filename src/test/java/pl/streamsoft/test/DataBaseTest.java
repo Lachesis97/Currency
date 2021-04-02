@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import pl.streamsoft.getOrSaveData.CurrencyRepository;
+import pl.streamsoft.get_or_save_data.CurrencyRepository;
 import pl.streamsoft.services.Currency;
 
 public class DataBaseTest {

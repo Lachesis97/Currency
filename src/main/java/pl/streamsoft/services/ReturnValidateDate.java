@@ -3,6 +3,7 @@ package pl.streamsoft.services;
 import java.time.LocalDate;
 
 import pl.streamsoft.exceptions.DateValidationException;
+import pl.streamsoft.get_or_save_data.DataProviderService;
 
 public class ReturnValidateDate {
 
@@ -10,14 +11,15 @@ public class ReturnValidateDate {
 
 		int i = 0;
 		Currency result;
+		LocalDate newDate = date;
 
-		result = strategy.validateDate(code.toUpperCase(), date);
+		result = strategy.validateDate(code.toUpperCase(), newDate);
 
 		while (result == null) {
 
-			date = date.minusDays(1);
+			newDate = newDate.minusDays(1);
 
-			result = strategy.validateDate(code.toUpperCase(), date);
+			result = strategy.validateDate(code.toUpperCase(), newDate);
 
 			i++;
 			if (i == 10) {
@@ -30,7 +32,7 @@ public class ReturnValidateDate {
 			}
 		}
 
-		return date;
+		return newDate;
 
 	}
 

@@ -8,10 +8,10 @@ import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
+import pl.streamsoft.data_converters.AdaptJsonStringNBP;
+import pl.streamsoft.data_converters.NbpJsonConverter;
 import pl.streamsoft.exceptions.MappingJsonException;
-import pl.streamsoft.services.AdaptJsonStringNBP;
 import pl.streamsoft.services.Currency;
-import pl.streamsoft.services.NbpJsonConverter;
 
 public class NbpJsonConverterTest {
 

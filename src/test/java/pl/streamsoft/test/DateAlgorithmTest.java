@@ -8,8 +8,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import pl.streamsoft.exceptions.DateValidationException;
-import pl.streamsoft.getOrSaveData.GetCurrencyJsonNBP;
-import pl.streamsoft.services.DataProviderService;
+import pl.streamsoft.get_or_save_data.DataProviderService;
+import pl.streamsoft.get_or_save_data.GetCurrencyJsonNBP;
 import pl.streamsoft.services.FutureDateToTodaysDate;
 import pl.streamsoft.services.ReturnValidateDate;
 

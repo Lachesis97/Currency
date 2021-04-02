@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import pl.streamsoft.CurrencyRate.CurrencyConversion;
+import pl.streamsoft.currency_rate.CurrencyConversion;
 import pl.streamsoft.services.Currency;
 
 public class CacheTest {
