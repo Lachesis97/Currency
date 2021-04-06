@@ -19,10 +19,12 @@ import org.hibernate.annotations.NamedQuery;
 @Entity
 @Table(name = "CurrencyCodeTable")
 @NamedQueries({
-		@NamedQuery(name = "CurrencyCodeTable.GetCurrency", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE (c.code = :code) AND (r.date = :date)"),
+		@NamedQuery(name = "CurrencyCodeTable.GetCurrency", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE c.code = :code AND r.date = :date"),
 		@NamedQuery(name = "CurrencyCodeTable.GetCode", query = "SELECT c FROM CurrencyCodeTable c WHERE c.code = :code"),
-		@NamedQuery(name = "CurrencyCodeTable.getFiveBestRates", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE (c.code = :code) ORDER BY r.rate DESC"),
-		@NamedQuery(name = "CurrencyCodeTable.getFiveWorstRates", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE (c.code = :code) ORDER BY r.rate ASC") })
+		@NamedQuery(name = "CurrencyCodeTable.getFiveBestRates", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE c.code = :code ORDER BY r.rate DESC"),
+		@NamedQuery(name = "CurrencyCodeTable.getFiveWorstRates", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE c.code = :code ORDER BY r.rate ASC"),
+		@NamedQuery(name = "CurrencyCodeTable.GetMaxRate", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE r.rate = (SELECT MAX(r.rate) FROM CurrencyRatesTable r WHERE r.cid = :cid AND (r.date BETWEEN :start AND :end))"),
+		@NamedQuery(name = "CurrencyCodeTable.GetMinRate", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE r.rate = (SELECT MIN(r.rate) FROM CurrencyRatesTable r WHERE r.cid = :cid AND (r.date BETWEEN :start AND :end))") })
 
 public class CurrencyCodeTable {
 

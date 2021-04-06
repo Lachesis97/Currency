@@ -266,11 +266,11 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 		Query query = entityManager.createNamedQuery("CurrencyCodeTable.GetCurrency");
 		query.setParameter("code", code.toUpperCase());
 		query.setParameter("date", date);
-		CurrencyCodeTable currencyCodeTable = null;
+
 		Currency currency = null;
 
 		try {
-			currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
+			CurrencyCodeTable currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
 
 			if (currencyCodeTable != null) {
 				for (CurrencyRatesTable currencyRatesTable : currencyCodeTable.getRate()) {
@@ -280,7 +280,11 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 				return currency;
 			} else {
 				if (nextStrategy != null) {
-					return nextStrategy.getCurrency(code, date);
+
+					Currency currency2 = nextStrategy.getCurrency(code, date);
+					addCurrency(currency2);
+
+					return currency2;
 				}
 				return null;
 

@@ -94,8 +94,6 @@ public class CurrencyConversion {
 			currency = dataProviderService.getCurrency(code.toUpperCase(), date);
 
 			cacheService.putToCache(currency, code, date);
-			CurrencyRepository currencyRepository = new CurrencyRepository();
-			currencyRepository.addCurrency(currency);
 
 		}
 
