@@ -26,7 +26,7 @@ import pl.streamsoft.services.Currency;
 
 public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 	private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Currency");
-	private DataProviderService nextStrategy;
+	private DataProviderService nextStrategy = null;
 
 	public CurrencyRepository() {
 
@@ -260,7 +260,6 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 
 	}
 
-	@Override
 	public Currency getCurrency(String code, LocalDate date) {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		Query query = entityManager.createNamedQuery("CurrencyCodeTable.GetCurrency");
@@ -270,29 +269,23 @@ public class CurrencyRepository implements CurrencyRepo, DataProviderService {
 		Currency currency = null;
 
 		try {
-			CurrencyCodeTable currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
+			CurrencyCodeTable currencyCodeTable = null;
 
-			if (currencyCodeTable != null) {
-				for (CurrencyRatesTable currencyRatesTable : currencyCodeTable.getRate()) {
-					currency = new Currency(currencyCodeTable.getName(), currencyCodeTable.getCode(),
-							currencyRatesTable.getDate(), currencyRatesTable.getRate());
-				}
-				return currency;
-			} else {
-				if (nextStrategy != null) {
+			currencyCodeTable = (CurrencyCodeTable) query.getSingleResult();
 
-					Currency currency2 = nextStrategy.getCurrency(code, date);
-					addCurrency(currency2);
-
-					return currency2;
-				}
-				return null;
-
+			for (CurrencyRatesTable currencyRatesTable : currencyCodeTable.getRate()) {
+				currency = new Currency(currencyCodeTable.getName(), currencyCodeTable.getCode(),
+						currencyRatesTable.getDate(), currencyRatesTable.getRate());
 			}
+			return currency;
 
 		} catch (NoResultException e) {
 			if (nextStrategy != null) {
-				return nextStrategy.getCurrency(code, date);
+				currency = nextStrategy.getCurrency(code, date);
+				System.out.println(currency.getName());
+				addCurrency(currency);
+
+				return currency;
 			}
 			return null;
 		} catch (NonUniqueResultException e) {

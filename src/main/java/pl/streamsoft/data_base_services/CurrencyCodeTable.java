@@ -78,4 +78,10 @@ public class CurrencyCodeTable {
 	public void setRate(Set<CurrencyRatesTable> rate) {
 		rate = rate;
 	}
+
+	@Override
+	public String toString() {
+		return "CurrencyCodeTable [id=" + id + ", name=" + name + ", code=" + code + ", rate=" + rate + "]";
+	}
+
 }

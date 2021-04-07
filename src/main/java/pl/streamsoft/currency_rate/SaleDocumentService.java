@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
-import pl.streamsoft.data_base_services.CurrencySpecificRequests;
 import pl.streamsoft.get_or_save_data.CurrencyRepository;
 import pl.streamsoft.get_or_save_data.GetCurrencyJsonNBP;
 import pl.streamsoft.services.Currency;
@@ -20,7 +19,7 @@ public class SaleDocumentService {
 	public void insert() {
 
 		String code = "eur";
-		LocalDate date = LocalDate.of(2021, 4, 15);
+		LocalDate date = LocalDate.of(2021, 3, 29);
 		BigDecimal foreignCurrency = new BigDecimal("123.00");
 
 		CurrencyConversion conversion = new CurrencyConversion(new CurrencyRepository(new GetCurrencyJsonNBP()));
@@ -38,14 +37,14 @@ public class SaleDocumentService {
 		conversion.conversion("gbp", LocalDate.of(2021, 3, 18));
 		conversion.conversion("usd", LocalDate.of(2021, 3, 17));
 
-		CurrencySpecificRequests specificRequests = new CurrencySpecificRequests();
+		// CurrencySpecificRequests specificRequests = new CurrencySpecificRequests();
 
-		Currency maxCurrency = specificRequests.getMaxRate("eur", LocalDate.of(2021, 3, 17), LocalDate.of(2021, 3, 31));
-		System.out.println("Max: " + maxCurrency.getCode() + ", " + maxCurrency.getName() + ", " + maxCurrency.getDate()
-				+ ", " + maxCurrency.getRate());
-		Currency minCurrency = specificRequests.getMinRate("eur", LocalDate.of(2021, 3, 17), LocalDate.of(2021, 3, 31));
-		System.out.println("Min: " + minCurrency.getCode() + ", " + minCurrency.getName() + ", " + minCurrency.getDate()
-				+ ", " + minCurrency.getRate());
+//		Currency maxCurrency = specificRequests.getMaxRate("eur", LocalDate.of(2021, 3, 17), LocalDate.of(2021, 3, 31));
+//		System.out.println("Max: " + maxCurrency.getCode() + ", " + maxCurrency.getName() + ", " + maxCurrency.getDate()
+//				+ ", " + maxCurrency.getRate());
+//		Currency minCurrency = specificRequests.getMinRate("eur", LocalDate.of(2021, 3, 17), LocalDate.of(2021, 3, 31));
+//		System.out.println("Min: " + minCurrency.getCode() + ", " + minCurrency.getName() + ", " + minCurrency.getDate()
+//				+ ", " + minCurrency.getRate());
 
 //
 //		List<Currency> bestFive = specificRequests.getFiveBestRates("eur");
