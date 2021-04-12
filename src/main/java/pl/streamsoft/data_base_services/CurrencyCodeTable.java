@@ -1,58 +1,50 @@
 package pl.streamsoft.data_base_services;
 
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.NamedQueries;
-import org.hibernate.annotations.NamedQuery;
 
 @Entity
 @Table(name = "CurrencyCodeTable")
 @NamedQueries({
 		@NamedQuery(name = "CurrencyCodeTable.GetCurrency", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE c.code = :code AND r.date = :date"),
 		@NamedQuery(name = "CurrencyCodeTable.GetCode", query = "SELECT c FROM CurrencyCodeTable c WHERE c.code = :code"),
-		@NamedQuery(name = "CurrencyCodeTable.getFiveBestRates", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE c.code = :code ORDER BY r.rate DESC"),
-		@NamedQuery(name = "CurrencyCodeTable.getFiveWorstRates", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE c.code = :code ORDER BY r.rate ASC"),
-		@NamedQuery(name = "CurrencyCodeTable.GetMaxRate", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE r.rate = (SELECT MAX(r.rate) FROM CurrencyRatesTable r WHERE r.cid = :cid AND (r.date BETWEEN :start AND :end))"),
-		@NamedQuery(name = "CurrencyCodeTable.GetMinRate", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE r.rate = (SELECT MIN(r.rate) FROM CurrencyRatesTable r WHERE r.cid = :cid AND (r.date BETWEEN :start AND :end))") })
+		@NamedQuery(name = "CurrencyCodeTable.GetMaxRate", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE c.code = :code AND r.rate = (SELECT MAX(r.rate) FROM CurrencyRatesTable r WHERE r.code = :code AND (r.date BETWEEN :start AND :end))"),
+		@NamedQuery(name = "CurrencyCodeTable.GetMinRate", query = "SELECT c FROM CurrencyCodeTable c JOIN FETCH c.rate r WHERE c.code = :code AND r.rate = (SELECT MIN(r.rate) FROM CurrencyRatesTable r WHERE r.code = :code AND (r.date BETWEEN :start AND :end))") })
 
-public class CurrencyCodeTable {
+public class CurrencyCodeTable implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", unique = true)
-	private Long id;
-
-	@Column(name = "Name", nullable = false, unique = true)
-	private String name;
-
-	@Column(name = "Code", nullable = false, unique = true)
+	@Column(name = "Code", unique = true)
 	private String code;
 
-	@OneToMany(fetch = FetchType.EAGER, targetEntity = CurrencyRatesTable.class, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "cid", referencedColumnName = "id")
-	private Set<CurrencyRatesTable> rate;
+	@Column(name = "Name", unique = true)
+	private String name;
+
+	@OneToMany(cascade = CascadeType.ALL, targetEntity = CurrencyRatesTable.class, mappedBy = "codetable", orphanRemoval = true)
+	private Set<CurrencyRatesTable> rate = new HashSet<CurrencyRatesTable>();
+
+	@ManyToMany(targetEntity = CountryTable.class, mappedBy = "codetable")
+	private Set<CurrencyRatesTable> country = new HashSet<CurrencyRatesTable>();
 
 	public CurrencyCodeTable() {
 
 	}
 
-	public Long getId() {
-		return id;
-	}
+	public CurrencyCodeTable(String code, String name) {
 
-	public void setId(Long id) {
-		this.id = id;
+		this.code = code;
+		this.name = name;
 	}
 
 	public String getName() {
@@ -76,12 +68,7 @@ public class CurrencyCodeTable {
 	}
 
 	public void setRate(Set<CurrencyRatesTable> rate) {
-		rate = rate;
-	}
-
-	@Override
-	public String toString() {
-		return "CurrencyCodeTable [id=" + id + ", name=" + name + ", code=" + code + ", rate=" + rate + "]";
+		this.rate = rate;
 	}
 
 }

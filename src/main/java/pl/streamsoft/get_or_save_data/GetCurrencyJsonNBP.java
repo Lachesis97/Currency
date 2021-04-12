@@ -59,7 +59,6 @@ public class GetCurrencyJsonNBP implements DataProviderService {
 
 	public Currency getCurrency(String code, LocalDate date) {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-
 		try {
 
 			HttpGet request = new HttpGet(url + code + "/" + date + "/?format=json");
@@ -77,7 +76,7 @@ public class GetCurrencyJsonNBP implements DataProviderService {
 				if (nextStrategy != null) {
 					return nextStrategy.getCurrency(code, date);
 				}
-				return nextStrategy.getCurrency(code, date);
+				return null;
 			}
 
 		} catch (NoHttpResponseException e) {

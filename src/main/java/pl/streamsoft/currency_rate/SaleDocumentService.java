@@ -10,19 +10,20 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
-import pl.streamsoft.get_or_save_data.CurrencyRepository;
-import pl.streamsoft.get_or_save_data.GetCurrencyJsonNBP;
+import pl.streamsoft.data_base_services.CountryRepository;
+import pl.streamsoft.data_base_services.CountryTable;
+import pl.streamsoft.data_base_services.CurrencyCodeTable;
 import pl.streamsoft.services.Currency;
 
 public class SaleDocumentService {
 
 	public void insert() {
 
-		String code = "eur";
-		LocalDate date = LocalDate.of(2021, 3, 29);
+		String code = "EUR";
+		LocalDate date = LocalDate.of(2021, 4, 8);
 		BigDecimal foreignCurrency = new BigDecimal("123.00");
 
-		CurrencyConversion conversion = new CurrencyConversion(new CurrencyRepository(new GetCurrencyJsonNBP()));
+		CurrencyConversion conversion = new CurrencyConversion();
 		Currency currency = conversion.conversion(code, date);
 		BigDecimal result = currency.currencyToPln(foreignCurrency);
 		System.out.println(result.setScale(2, RoundingMode.HALF_UP));
@@ -37,29 +38,38 @@ public class SaleDocumentService {
 		conversion.conversion("gbp", LocalDate.of(2021, 3, 18));
 		conversion.conversion("usd", LocalDate.of(2021, 3, 17));
 
-		// CurrencySpecificRequests specificRequests = new CurrencySpecificRequests();
+		CountryRepository repository = new CountryRepository();
 
-//		Currency maxCurrency = specificRequests.getMaxRate("eur", LocalDate.of(2021, 3, 17), LocalDate.of(2021, 3, 31));
+		CountryTable countryTable = repository.getCountryCurrencyList("PL");
+
+		for (CurrencyCodeTable currencyCodeTable : countryTable.getCodetable()) {
+			System.out.println("Kod Kraju: " + countryTable.getCountry_code() + ", Nazwa Kraju: "
+					+ countryTable.getCountry_name() + ", Kod waluty: " + currencyCodeTable.getCode()
+					+ ", Pe³na nazwa waluty: " + currencyCodeTable.getName());
+		}
+
+//		CurrencySpecificRequests specificRequests = new CurrencySpecificRequests();
+//
+//		Currency maxCurrency = specificRequests.getMaxRate("EUR", LocalDate.of(2021, 3, 17), LocalDate.of(2021, 4, 10));
 //		System.out.println("Max: " + maxCurrency.getCode() + ", " + maxCurrency.getName() + ", " + maxCurrency.getDate()
 //				+ ", " + maxCurrency.getRate());
-//		Currency minCurrency = specificRequests.getMinRate("eur", LocalDate.of(2021, 3, 17), LocalDate.of(2021, 3, 31));
+//		Currency minCurrency = specificRequests.getMinRate("EUR", LocalDate.of(2021, 3, 17), LocalDate.of(2021, 4, 10));
 //		System.out.println("Min: " + minCurrency.getCode() + ", " + minCurrency.getName() + ", " + minCurrency.getDate()
 //				+ ", " + minCurrency.getRate());
-
 //
-//		List<Currency> bestFive = specificRequests.getFiveBestRates("eur");
-//		List<Currency> worstFive = specificRequests.getFiveWorstRates("eur");
+//		List<CurrencyRatesTable> bestFive = specificRequests.getFiveBestRates("eur");
+//		List<CurrencyRatesTable> worstFive = specificRequests.getFiveWorstRates("eur");
 //
 //		int i = 1;
-//		for (Currency currency2 : bestFive) {
-//			System.out.println("Best " + i + ": " + currency2.getCode() + ", " + currency2.getName() + ", "
-//					+ currency2.getDate() + ", " + currency2.getRate());
+//		for (CurrencyRatesTable currencyRatesTable : bestFive) {
+//			System.out.println("Best " + i + ": " + currencyRatesTable.getCode() + ", " + currencyRatesTable.getDate()
+//					+ ", " + currencyRatesTable.getRate());
 //			i++;
 //		}
 //		i = 1;
-//		for (Currency currency2 : worstFive) {
-//			System.out.println("Worst " + i + ": " + currency2.getCode() + ", " + currency2.getName() + ", "
-//					+ currency2.getDate() + ", " + currency2.getRate());
+//		for (CurrencyRatesTable currencyRatesTable : worstFive) {
+//			System.out.println("Worst " + i + ": " + currencyRatesTable.getCode() + ", " + currencyRatesTable.getDate()
+//					+ ", " + currencyRatesTable.getRate());
 //			i++;
 //		}
 

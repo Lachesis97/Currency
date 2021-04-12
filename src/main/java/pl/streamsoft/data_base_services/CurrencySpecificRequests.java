@@ -1,7 +1,6 @@
 package pl.streamsoft.data_base_services;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -26,7 +25,7 @@ public class CurrencySpecificRequests extends CurrencyRepository {
 
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		Query query = entityManager.createNamedQuery("CurrencyCodeTable.GetMaxRate");
-		query.setParameter("cid", getCurrencyId(code.toUpperCase()));
+		query.setParameter("code", code.toUpperCase());
 		query.setParameter("start", start);
 		query.setParameter("end", end);
 
@@ -42,17 +41,17 @@ public class CurrencySpecificRequests extends CurrencyRepository {
 
 			return currency;
 		} catch (NoResultException e) {
-			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ MAX Kursu.", e);
 		} catch (NonUniqueResultException e) {
 			throw new GetFromDataBaseException("Powtarzajπcy siÍ rekord w bazie danych.", e);
 		} catch (IllegalArgumentException e) {
 			throw new GetFromDataBaseException("èle sformu≥owane zapytanie.", e);
 		} catch (IllegalStateException e) {
-			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ MAX Kursu.", e);
 		} catch (QueryTimeoutException e) {
-			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ MAX Kursu.", e);
 		} catch (PersistenceException e) {
-			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ MAX Kursu.", e);
 		} finally {
 			entityManager.close();
 		}
@@ -63,7 +62,7 @@ public class CurrencySpecificRequests extends CurrencyRepository {
 
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		Query query = entityManager.createNamedQuery("CurrencyCodeTable.GetMinRate");
-		query.setParameter("cid", getCurrencyId(code.toUpperCase()));
+		query.setParameter("code", code.toUpperCase());
 		query.setParameter("start", start);
 		query.setParameter("end", end);
 
@@ -79,43 +78,34 @@ public class CurrencySpecificRequests extends CurrencyRepository {
 
 			return currency;
 		} catch (NoResultException e) {
-			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ MIN Kursu.", e);
 		} catch (NonUniqueResultException e) {
 			throw new GetFromDataBaseException("Powtarzajπcy siÍ rekord w bazie danych.", e);
 		} catch (IllegalArgumentException e) {
 			throw new GetFromDataBaseException("èle sformu≥owane zapytanie.", e);
 		} catch (IllegalStateException e) {
-			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ MIN Kursu.", e);
 		} catch (QueryTimeoutException e) {
-			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ MIN Kursu.", e);
 		} catch (PersistenceException e) {
-			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ MIN Kursu.", e);
 		} finally {
 			entityManager.close();
 		}
 
 	}
 
-	public List<Currency> getFiveBestRates(String code) {
+	public List<CurrencyRatesTable> getFiveBestRates(String code) {
 
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		Query query = entityManager.createNamedQuery("CurrencyCodeTable.getFiveBestRates").setMaxResults(5);
-		query.setParameter("code", code.toUpperCase());
-
-		List<Currency> currencyList = new ArrayList<>();
-		List<CurrencyCodeTable> dbResult;
-
 		try {
-			dbResult = query.getResultList();
+			Query query = entityManager.createNamedQuery("CurrencyRatesTable.getFiveBestRates");
+			query.setParameter("code", code.toUpperCase());
+			query.setMaxResults(5);
 
-			for (CurrencyCodeTable currencyCodeTable : dbResult) {
-				for (CurrencyRatesTable currencyRatesTable : currencyCodeTable.getRate()) {
-					currencyList.add(new Currency(currencyCodeTable.getName(), currencyCodeTable.getCode(),
-							currencyRatesTable.getDate(), currencyRatesTable.getRate()));
-				}
-			}
+			List<CurrencyRatesTable> dbResult = query.getResultList();
 
-			return currencyList;
+			return dbResult;
 		} catch (NoResultException e) {
 			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
 		} catch (NonUniqueResultException e) {
@@ -134,25 +124,16 @@ public class CurrencySpecificRequests extends CurrencyRepository {
 
 	}
 
-	public List<Currency> getFiveWorstRates(String code) {
+	public List<CurrencyRatesTable> getFiveWorstRates(String code) {
 
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		Query query = entityManager.createNamedQuery("CurrencyCodeTable.getFiveWorstRates");
-		query.setParameter("code", code.toUpperCase());
-		query.setMaxResults(5);
-		List<Currency> currencyList = new ArrayList<>();
-		List<CurrencyCodeTable> dbResult;
-
 		try {
-			dbResult = query.getResultList();
-			for (CurrencyCodeTable currencyCodeTable : dbResult) {
-				for (CurrencyRatesTable currencyRatesTable : currencyCodeTable.getRate()) {
-					currencyList.add(new Currency(currencyCodeTable.getName(), currencyCodeTable.getCode(),
-							currencyRatesTable.getDate(), currencyRatesTable.getRate()));
-				}
-			}
+			Query query = entityManager.createNamedQuery("CurrencyRatesTable.getFiveWorstRates");
+			query.setParameter("code", code.toUpperCase());
+			query.setMaxResults(5);
+			List<CurrencyRatesTable> dbResult = query.getResultList();
 
-			return currencyList;
+			return dbResult;
 		} catch (NoResultException e) {
 			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ ID podanego kodu.", e);
 		} catch (NonUniqueResultException e) {

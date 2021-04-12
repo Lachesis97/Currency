@@ -16,15 +16,15 @@ public class CacheTest {
 		// given
 		CurrencyConversion conversion = new CurrencyConversion();
 
-		Assertions.assertThat(conversion.getCache().get("eur2021-03-22")).isNull();
+		Assertions.assertThat(conversion.getCache().get("EUR2021-03-22")).isNull();
 
 		// when
 
-		Currency currency = conversion.conversion("eur", LocalDate.of(2021, 3, 22));
+		Currency currency = conversion.conversion("EUR", LocalDate.of(2021, 3, 22));
 
 		// then
-		Assertions.assertThat(conversion.getCache().get("eur2021-03-22")).isNotNull();
-		Assertions.assertThat(conversion.getCache().get("eur2021-03-22")).isEqualTo(currency);
+		Assertions.assertThat(conversion.getCache().get("EUR2021-03-22")).isNotNull();
+		Assertions.assertThat(conversion.getCache().get("EUR2021-03-22")).isEqualTo(currency);
 
 	}
 
@@ -33,9 +33,9 @@ public class CacheTest {
 
 		// given
 		int maxEntries = 2;
-		String key1 = "eur2021-03-22";
-		String key2 = "eur2021-03-23";
-		String key3 = "eur2021-03-24";
+		String key1 = "EUR2021-03-22";
+		String key2 = "EUR2021-03-23";
+		String key3 = "EUR2021-03-24";
 		CurrencyConversion conversion = new CurrencyConversion(maxEntries);
 
 		Assertions.assertThat(conversion.getCache().get(key1)).isNull();
@@ -43,9 +43,12 @@ public class CacheTest {
 		Assertions.assertThat(conversion.getCache().get(key3)).isNull();
 
 		// when
-		Currency currency1 = conversion.conversion("eur", LocalDate.of(2021, 3, 22));
-		Currency currency2 = conversion.conversion("eur", LocalDate.of(2021, 3, 23));
-		Currency currency3 = conversion.conversion("eur", LocalDate.of(2021, 3, 24));
+
+		Currency currency1 = conversion.conversion("EUR", LocalDate.of(2021, 3, 22));
+
+		Currency currency2 = conversion.conversion("EUR", LocalDate.of(2021, 3, 23));
+
+		Currency currency3 = conversion.conversion("EUR", LocalDate.of(2021, 3, 24));
 
 		// then
 		Assertions.assertThat(conversion.getCache().get(key1)).isNull();
@@ -60,7 +63,7 @@ public class CacheTest {
 		// given
 		CurrencyConversion conversion = new CurrencyConversion();
 		conversion.conversion("eur", LocalDate.of(2021, 3, 22));
-		Assertions.assertThat(conversion.getCache().get("eur2021-03-22")).isNotNull();
+		Assertions.assertThat(conversion.getCache().get("EUR2021-03-22")).isNotNull();
 
 		// when
 

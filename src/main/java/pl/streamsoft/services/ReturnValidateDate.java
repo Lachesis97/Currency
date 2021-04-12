@@ -17,19 +17,18 @@ public class ReturnValidateDate {
 
 		while (result == null) {
 
+			if (strategy.getNextStrategy() != null && result == null) {
+				return ReturnValidateDate.dataValidation(code, date, strategy.getNextStrategy());
+			} else if (i == 10) {
+				throw new DateValidationException("B³êdne argumenty wyszukiwania lub nie ma takiego kursu.");
+
+			}
+
 			newDate = newDate.minusDays(1);
 
 			result = strategy.validateDate(code.toUpperCase(), newDate);
 
 			i++;
-			if (i == 10) {
-				if (strategy.getNextStrategy() != null) {
-					return ReturnValidateDate.dataValidation(code, date, strategy.getNextStrategy());
-				} else {
-					throw new DateValidationException("B³êdne argumenty wyszukiwania lub nie ma takiego kursu.");
-				}
-
-			}
 		}
 
 		return newDate;

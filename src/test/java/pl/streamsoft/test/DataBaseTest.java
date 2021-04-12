@@ -85,26 +85,6 @@ public class DataBaseTest {
 	}
 
 	@Test
-	public void should_return_code_id() {
-
-		// given
-		Currency currency = new Currency("NAZWA", "KOD", LocalDate.of(2021, 5, 23), new BigDecimal("1"));
-		CurrencyRepository currencyRepository = new CurrencyRepository();
-		currencyRepository.addCurrency(currency);
-		Assertions.assertThat(currencyRepository.rateExists("KOD", LocalDate.of(2021, 5, 23))).isEqualTo(true);
-		Assertions.assertThat(currencyRepository.codeExists("KOD")).isEqualTo(true);
-
-		// when
-		Long id1 = currencyRepository.getCurrencyId("KOD");
-		Long id2 = currencyRepository.getCurrencyId("KOT");
-
-		// then
-		Assertions.assertThat(id1).isNotEqualTo(0L);
-		Assertions.assertThat(id2).isEqualTo(0L);
-
-	}
-
-	@Test
 	public void should_return_currency_obj_from_db() {
 
 		// given

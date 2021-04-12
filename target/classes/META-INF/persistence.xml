@@ -6,6 +6,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>pl.streamsoft.data_base_services.CurrencyCodeTable</class>
         <class>pl.streamsoft.data_base_services.CurrencyRatesTable</class>
+        <class>pl.streamsoft.data_base_services.CountryTable</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost/postgres" />

@@ -6,28 +6,27 @@ import pl.streamsoft.cache_service.CacheService;
 import pl.streamsoft.cache_service.LruCacheService;
 import pl.streamsoft.services.Currency;
 
-public class LruCache implements CacheService {
+public class LruCache implements CacheService, DataProviderService {
 
-	private LruCacheService<String, Currency> cache = new LruCacheService<String, Currency>(20);;
+	private LruCacheService<String, Currency> cache = new LruCacheService<String, Currency>(20);
 
-	public LruCache() {
+	private DataProviderService nextStrategy;
+
+	public LruCache(DataProviderService dataProviderService) {
+		this.nextStrategy = dataProviderService;
 	}
 
-	public LruCache(LruCacheService cache) {
+	public LruCache(LruCacheService<String, Currency> cache) {
 		this.cache = cache;
 	}
 
-	public Currency checkAndGetIfExist(String code, LocalDate date) {
+	public LruCache(LruCacheService<String, Currency> cache, DataProviderService dataProviderService) {
+		this.cache = cache;
+		this.nextStrategy = dataProviderService;
+	}
 
-		String key = code + date.toString();
+	public LruCache() {
 
-		Currency currency;
-		if (cache.get(key) != null) {
-			currency = cache.get(key);
-
-			return currency;
-		}
-		return null;
 	}
 
 	public void putToCache(Currency currency, String code, LocalDate date) {
@@ -46,6 +45,43 @@ public class LruCache implements CacheService {
 
 	public LruCacheService getCache() {
 		return cache;
+	}
+
+	public Currency getCurrency(String code, LocalDate date) {
+		String key = code + date.toString();
+
+		Currency currency = null;
+
+		if (cache.get(key) != null) {
+			currency = cache.get(key);
+
+			return currency;
+		} else {
+			if (nextStrategy != null) {
+				currency = nextStrategy.getCurrency(code, date);
+				putToCache(currency, code, date);
+				return currency;
+			}
+			return currency;
+		}
+
+	}
+
+	public Currency validateDate(String code, LocalDate date) {
+		String key = code + date.toString();
+
+		Currency currency = null;
+
+		if (cache.get(key) != null) {
+			currency = cache.get(key);
+
+			return currency;
+		}
+		return currency;
+	}
+
+	public DataProviderService getNextStrategy() {
+		return nextStrategy;
 	}
 
 }
