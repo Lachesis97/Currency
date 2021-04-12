@@ -17,8 +17,9 @@ import javax.persistence.Table;
 @Table(name = "CountryTable")
 @NamedQueries({
 		@NamedQuery(name = "CountryTable.GetCountry", query = "SELECT country FROM CountryTable country WHERE country.country_code = :country_code AND country.country_name = :country_name"),
-		@NamedQuery(name = "CountryTable.CountryHaveRate", query = "SELECT country FROM CountryTable country JOIN country.codetable code WHERE code.code = :code AND country.country_name = :country_name"),
-		@NamedQuery(name = "CountryTable.GetCountryCurrencyList", query = "SELECT country FROM CountryTable country JOIN FETCH country.codetable code WHERE country.country_code = :country_code") })
+		@NamedQuery(name = "CountryTable.CountryHaveRate", query = "SELECT country FROM CountryTable country JOIN country.codetable code WHERE code.code = :code AND country.country_code = :country_code"),
+		@NamedQuery(name = "CountryTable.GetCountryCurrencyList", query = "SELECT country FROM CountryTable country JOIN FETCH country.codetable code WHERE country.country_code = :country_code"),
+		@NamedQuery(name = "CountryTable.GetCountriesWithTwoOrMoreCurrencies", query = "SELECT country FROM CountryTable country JOIN country.codetable code GROUP BY country.country_code HAVING COUNT(code) > 1") })
 
 public class CountryTable implements Serializable {
 

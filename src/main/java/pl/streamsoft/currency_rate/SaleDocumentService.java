@@ -10,9 +10,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
-import pl.streamsoft.data_base_services.CountryRepository;
-import pl.streamsoft.data_base_services.CountryTable;
-import pl.streamsoft.data_base_services.CurrencyCodeTable;
 import pl.streamsoft.services.Currency;
 
 public class SaleDocumentService {
@@ -38,15 +35,24 @@ public class SaleDocumentService {
 		conversion.conversion("gbp", LocalDate.of(2021, 3, 18));
 		conversion.conversion("usd", LocalDate.of(2021, 3, 17));
 
-		CountryRepository repository = new CountryRepository();
+//		CountryRepository repository = new CountryRepository();
+//
+//		repository.deleteCountry("DE");
 
-		CountryTable countryTable = repository.getCountryCurrencyList("PL");
+//		repository.addCountry("AU", "Australia", "AUÆ", "Dolar taki o");
 
-		for (CurrencyCodeTable currencyCodeTable : countryTable.getCodetable()) {
-			System.out.println("Kod Kraju: " + countryTable.getCountry_code() + ", Nazwa Kraju: "
-					+ countryTable.getCountry_name() + ", Kod waluty: " + currencyCodeTable.getCode()
-					+ ", Pe³na nazwa waluty: " + currencyCodeTable.getName());
-		}
+//		List<CountryTable> resultList = repository.getCountriesWithTwoOrMoreCurrencies();
+//		for (CountryTable countryTable2 : resultList) {
+//			System.out.println("Kod Kraju: " + countryTable2.getCountry_code() + ", Nazwa Kraju: "
+//					+ countryTable2.getCountry_name());
+//		}
+
+//		CountryTable countryTable = repository.getCountryCurrencyList("PL");
+//		for (CurrencyCodeTable currencyCodeTable : countryTable.getCodetable()) {
+//			System.out.println("Kod Kraju: " + countryTable.getCountry_code() + ", Nazwa Kraju: "
+//					+ countryTable.getCountry_name() + ", Kod waluty: " + currencyCodeTable.getCode()
+//					+ ", Pe³na nazwa waluty: " + currencyCodeTable.getName());
+//		}
 
 //		CurrencySpecificRequests specificRequests = new CurrencySpecificRequests();
 //
@@ -57,8 +63,8 @@ public class SaleDocumentService {
 //		System.out.println("Min: " + minCurrency.getCode() + ", " + minCurrency.getName() + ", " + minCurrency.getDate()
 //				+ ", " + minCurrency.getRate());
 //
-//		List<CurrencyRatesTable> bestFive = specificRequests.getFiveBestRates("eur");
-//		List<CurrencyRatesTable> worstFive = specificRequests.getFiveWorstRates("eur");
+//		List<CurrencyRatesTable> bestFive = specificRequests.getFiveBestRates("TEST");
+//		List<CurrencyRatesTable> worstFive = specificRequests.getFiveWorstRates("TEST");
 //
 //		int i = 1;
 //		for (CurrencyRatesTable currencyRatesTable : bestFive) {
@@ -72,7 +78,7 @@ public class SaleDocumentService {
 //					+ ", " + currencyRatesTable.getRate());
 //			i++;
 //		}
-
+//
 	}
 
 }

@@ -9,7 +9,7 @@ import org.junit.Test;
 import pl.streamsoft.get_or_save_data.CurrencyRepository;
 import pl.streamsoft.services.Currency;
 
-public class DataBaseTest {
+public class CurrencyDbTest {
 
 	@Test
 	public void should_return_true_if_code_exist() {

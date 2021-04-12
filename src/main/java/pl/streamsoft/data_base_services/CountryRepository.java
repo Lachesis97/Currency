@@ -1,5 +1,8 @@
 package pl.streamsoft.data_base_services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -11,11 +14,12 @@ import javax.persistence.Query;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.QueryTimeoutException;
 
+import pl.streamsoft.exceptions.DeleteFromDataBaseException;
 import pl.streamsoft.exceptions.GetFromDataBaseException;
 import pl.streamsoft.exceptions.UpdateDataBaseException;
 import pl.streamsoft.get_or_save_data.CurrencyRepository;
 
-public class CountryRepository {
+public class CountryRepository extends CurrencySpecificRequests {
 	private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Currency");
 
 	public void addCountry(String countryCode, String countryName, String currencyCode, String currencyName) {
@@ -99,13 +103,13 @@ public class CountryRepository {
 
 	}
 
-	public boolean countryHaveRate(String countryName, String currencyCode) {
+	public boolean countryHaveRate(String countryCode, String currencyCode) {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 
 		try {
 			Query query = entityManager.createNamedQuery("CountryTable.CountryHaveRate");
 			query.setParameter("code", currencyCode.toUpperCase());
-			query.setParameter("country_name", countryName);
+			query.setParameter("country_code", countryCode);
 			CountryTable countryTable = null;
 
 			countryTable = (CountryTable) query.getSingleResult();
@@ -133,32 +137,34 @@ public class CountryRepository {
 
 	}
 
-//	public List<CountryTable> getCountryCurrencyList(String countryCode) {
-//		EntityManager entityManager = entityManagerFactory.createEntityManager();
-//
-//		try {
-//			Query query = entityManager.createNamedQuery("CountryTable.GetCountryCurrencyList");
-//			query.setParameter("country_code", countryCode.toUpperCase());
-//
-//			return dbResult;
-//
-//		} catch (NoResultException e) {
-//			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
-//		} catch (NonUniqueResultException e) {
-//			throw new GetFromDataBaseException("Powtarzajπcy siÍ rekord w bazie danych.", e);
-//		} catch (IllegalArgumentException e) {
-//			throw new GetFromDataBaseException("èle sformu≥owane zapytanie.", e);
-//		} catch (IllegalStateException e) {
-//			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
-//		} catch (QueryTimeoutException e) {
-//			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
-//		} catch (PersistenceException e) {
-//			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
-//		} finally {
-//			entityManager.close();
-//		}
-//
-//	}
+	public List<CountryTable> getCountriesWithTwoOrMoreCurrencies() {
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		List<CountryTable> dbResult = new ArrayList<CountryTable>();
+
+		try {
+			Query query = entityManager.createNamedQuery("CountryTable.GetCountriesWithTwoOrMoreCurrencies");
+
+			dbResult = query.getResultList();
+
+			return dbResult;
+
+		} catch (NoResultException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
+		} catch (NonUniqueResultException e) {
+			throw new GetFromDataBaseException("Powtarzajπcy siÍ rekord w bazie danych.", e);
+		} catch (IllegalArgumentException e) {
+			throw new GetFromDataBaseException("èle sformu≥owane zapytanie.", e);
+		} catch (IllegalStateException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
+		} catch (QueryTimeoutException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
+		} catch (PersistenceException e) {
+			throw new GetFromDataBaseException("Nie uda≥o siÍ pobraÊ obiektu z bazy danych.", e);
+		} finally {
+			entityManager.close();
+		}
+
+	}
 
 	public CountryTable getCountryCurrencyList(String countryCode) {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -187,6 +193,30 @@ public class CountryRepository {
 			entityManager.close();
 		}
 
+	}
+
+	public void deleteCountry(String countryCode) {
+
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		EntityTransaction entityTransaction = entityManager.getTransaction();
+
+		try {
+
+			entityTransaction.begin();
+			CountryTable countryTable = entityManager.find(CountryTable.class, countryCode);
+			entityManager.remove(countryTable);
+
+			entityTransaction.commit();
+
+		} catch (IllegalArgumentException e) {
+			throw new DeleteFromDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (IllegalStateException e) {
+			throw new DeleteFromDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (QueryTimeoutException e) {
+			throw new DeleteFromDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		} catch (PersistenceException e) {
+			throw new DeleteFromDataBaseException("Nie uda≥o siÍ usunπÊ rekordu z bazy danych.", e);
+		}
 	}
 
 }
